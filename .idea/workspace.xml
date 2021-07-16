@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表">
+      <change beforePath="$PROJECT_DIR$/.idea/infinicalc_wechat.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/infinicalc_wechat.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/wechat_purse/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/wechat_purse/wechat_purse_api.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +33,11 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="InvalidFacetManager">
+    <ignored-facets>
+      <facet id="infinicalc_wechat/invalid/Django" />
+    </ignored-facets>
+  </component>
   <component name="ProjectId" id="1ZPvvSmir25tn0yie98SuZcwaX9" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -37,10 +47,11 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DatabaseDriversLRU" value="mariadb&#10;mysql&#10;clickhouse" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="add_unversioned_files" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/wechat" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -56,7 +67,7 @@
       <recent name="$PROJECT_DIR$/app" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.models">
+  <component name="RunManager" selected="Python.infinicalc_wechat">
     <configuration name="infinicalc_wechat" type="PythonConfigurationType" factoryName="Python">
       <module name="infinicalc_wechat" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -133,8 +144,9 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
-    <configuration />
+    <configuration>C:\Users\jinzhang.chen\AppData\Roaming\Subversion</configuration>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -603,6 +615,17 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="2" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ignore" />
     <MESSAGE value="delete migrations" />
@@ -613,92 +636,6 @@
     <MESSAGE value="bugs" />
     <MESSAGE value="默认更改列表" />
     <option name="LAST_COMMIT_MESSAGE" value="默认更改列表" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="722" y="365" key="#Notifications" timestamp="1614499914095">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="722" y="365" key="#Notifications/0.0.1680.1050@0.0.1680.1050" timestamp="1614499914095" />
-    <state x="304" y="159" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1614499574640">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="304" y="159" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1614499574640" />
-    <state x="494" y="111" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1613484800636">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="494" y="111" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1613484800636" />
-    <state x="578" y="276" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1613189369715">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="578" y="276" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1613189369715" />
-    <state x="365" y="29" width="1193" height="1021" key="CommitChangelistDialog2" timestamp="1614872352624">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="365" y="29" width="1193" height="1021" key="CommitChangelistDialog2/0.0.1680.1050@0.0.1680.1050" timestamp="1614872352624" />
-    <state width="1638" height="311" key="GridCell.Tab.0.bottom" timestamp="1614872299561">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299561" />
-    <state width="1638" height="352" key="GridCell.Tab.0.bottom/0.25.1680.956@0.25.1680.956" timestamp="1614606712389" />
-    <state width="1638" height="311" key="GridCell.Tab.0.center" timestamp="1614872299559">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299559" />
-    <state width="1638" height="352" key="GridCell.Tab.0.center/0.25.1680.956@0.25.1680.956" timestamp="1614606712388" />
-    <state width="1638" height="311" key="GridCell.Tab.0.left" timestamp="1614872299559">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299559" />
-    <state width="1638" height="352" key="GridCell.Tab.0.left/0.25.1680.956@0.25.1680.956" timestamp="1614606712388" />
-    <state width="1638" height="311" key="GridCell.Tab.0.right" timestamp="1614872299560">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299560" />
-    <state width="1638" height="352" key="GridCell.Tab.0.right/0.25.1680.956@0.25.1680.956" timestamp="1614606712389" />
-    <state width="1638" height="311" key="GridCell.Tab.1.bottom" timestamp="1614872308158">
-      <screen x="0" y="25" width="1680" height="956" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.1.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299396" />
-    <state width="1638" height="311" key="GridCell.Tab.1.bottom/0.25.1680.956@0.25.1680.956" timestamp="1614872308158" />
-    <state width="1638" height="311" key="GridCell.Tab.1.center" timestamp="1614872308156">
-      <screen x="0" y="25" width="1680" height="956" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.1.center/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299395" />
-    <state width="1638" height="311" key="GridCell.Tab.1.center/0.25.1680.956@0.25.1680.956" timestamp="1614872308156" />
-    <state width="1638" height="311" key="GridCell.Tab.1.left" timestamp="1614872308155">
-      <screen x="0" y="25" width="1680" height="956" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.1.left/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299394" />
-    <state width="1638" height="311" key="GridCell.Tab.1.left/0.25.1680.956@0.25.1680.956" timestamp="1614872308155" />
-    <state width="1638" height="311" key="GridCell.Tab.1.right" timestamp="1614872308157">
-      <screen x="0" y="25" width="1680" height="956" />
-    </state>
-    <state width="1638" height="311" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1614872299395" />
-    <state width="1638" height="311" key="GridCell.Tab.1.right/0.25.1680.956@0.25.1680.956" timestamp="1614872308157" />
-    <state x="349" y="161" key="SettingsEditor" timestamp="1614528578368">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="349" y="161" key="SettingsEditor/0.0.1680.1050@0.0.1680.1050" timestamp="1614528578368" />
-    <state x="436" y="239" key="Vcs.Push.Dialog.v2" timestamp="1614872391791">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="436" y="239" key="Vcs.Push.Dialog.v2/0.0.1680.1050@0.0.1680.1050" timestamp="1614872391791" />
-    <state x="579" y="253" width="887" height="544" key="find.popup" timestamp="1614526948598">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="579" y="253" width="887" height="544" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1614526948598" />
-    <state x="609" y="160" key="git4idea.branch.GitSmartOperationDialog" timestamp="1614503948206">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="609" y="160" key="git4idea.branch.GitSmartOperationDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1614503948206" />
-    <state x="588" y="311" key="git4idea.merge.GitMergeDialog" timestamp="1614872372412">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="588" y="311" key="git4idea.merge.GitMergeDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1614872372412" />
-    <state x="505" y="233" width="670" height="676" key="search.everywhere.popup" timestamp="1614780763893">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="505" y="233" width="670" height="676" key="search.everywhere.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1614780763893" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -722,11 +659,5 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/infinicalc_wechat$qq_lbs.coverage" NAME="qq_lbs Coverage Results" MODIFIED="1601905894821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/wechat" />
-    <SUITE FILE_PATH="coverage/infinicalc_wechat$untitled.coverage" NAME="untitled Coverage Results" MODIFIED="1585496934116" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/infinicalc_wechat$models.coverage" NAME="models Coverage Results" MODIFIED="1614783163027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/infinicalc_wechat$infinicalc_wechat.coverage" NAME="infinicalc_wechat Coverage Results" MODIFIED="1614872299345" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
   </component>
 </project>
