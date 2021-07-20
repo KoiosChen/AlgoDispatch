@@ -29,11 +29,11 @@ def session_commit():
         return false_return(message=str(e)), 400
 
 
-def submit_return(success_msg, false_msg):
+def submit_return(success_msg, false_msg, data):
     if session_commit().get("code") == "success":
-        return success_return(message=success_msg)
+        return success_return(message=success_msg, data=data)
     else:
-        return false_return(message=false_msg + ", " + session_commit().get('message')), 400
+        return false_return(message=false_msg + ", " + session_commit().get('message'), data=data), 400
 
 
 def nesteddict():

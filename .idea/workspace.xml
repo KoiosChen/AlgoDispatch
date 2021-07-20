@@ -4,11 +4,11 @@
     <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth/auths.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/auth/auths.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/common.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/decorators.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/decorators.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/jobs/jobs_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/jobs/jobs_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/public_method.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/public_method.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manage.py" beforeDir="false" afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shell.py" beforeDir="false" afterPath="$PROJECT_DIR$/shell.py" afterDir="false" />
     </list>
@@ -72,17 +72,17 @@
       <recent name="$PROJECT_DIR$/app" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.infinicalc_wechat">
-    <configuration name="infinicalc_wechat" type="PythonConfigurationType" factoryName="Python">
+  <component name="RunManager" selected="Python.algo_dispatch">
+    <configuration name="algo_dispatch" type="PythonConfigurationType" factoryName="Python">
       <module name="infinicalc_wechat" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="$USER_HOME$/.virtualenvs/untitled/bin/python" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
@@ -139,6 +139,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.algo_dispatch" />
+      <item itemvalue="Python.models" />
+      <item itemvalue="Python.qq_lbs" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.qq_lbs" />
@@ -270,13 +275,6 @@
       <workItem from="1614478333331" duration="360000" />
       <workItem from="1614478725965" duration="12936000" />
       <workItem from="1614607464778" duration="26122000" />
-    </task>
-    <task id="LOCAL-00055" summary="默认更改列表">
-      <created>1613189418478</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1613189418478</updated>
     </task>
     <task id="LOCAL-00056" summary="默认更改列表">
       <created>1613192773261</created>
@@ -614,7 +612,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626762265990</updated>
     </task>
-    <option name="localTasksCounter" value="104" />
+    <task id="LOCAL-00104" summary="默认更改列表">
+      <created>1626771340325</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1626771340325</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

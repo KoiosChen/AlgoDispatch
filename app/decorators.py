@@ -2,8 +2,6 @@ from functools import wraps
 from flask import abort, request, make_response, session
 from . import logger
 from .common import false_return, exp_return, success_return
-# from app.auth.auths import identify
-# from app.frontstage_auth import auths
 from flask import make_response
 
 
@@ -37,6 +35,7 @@ def permission_required(permission):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+
             return f(*args, **kwargs)
 
         return decorated_function

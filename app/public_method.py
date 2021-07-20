@@ -31,11 +31,11 @@ def new_data_obj(table, **kwargs):
     :param kwargs: 表数据，需要对应表字段
     :return: 新增，或者已有数据的对象
     """
-    logger.debug(f">>> Check the {table.__class__.__name__} for data {kwargs}")
-    __obj = table.query.filter_by(**kwargs).first()
+    logger.debug(f">>> Check the {table} for data {kwargs}")
+    __obj = eval(table).query.filter_by(**kwargs).first()
     new_one = True
     if not __obj:
-        logger.debug(f">>> The table {table.__class__.__name__} does not have the obj, create new one!")
+        logger.debug(f">>> The table {table} does not have the obj, create new one!")
         try:
             __obj = eval(table)(**kwargs)
             db.session.add(__obj)

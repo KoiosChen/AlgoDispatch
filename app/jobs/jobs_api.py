@@ -28,24 +28,23 @@ update_job_parser.replace_argument('name', required=False, help='任务名称')
 
 return_json = jobs_ns.model('ReturnRegister', return_dict)
 
-user_page_parser = page_parser.copy()
-user_page_parser.add_argument('Authorization', required=True, location='headers')
-user_page_parser.add_argument('phone', help='搜索phone字段', location='args')
+jobs_page_parser = page_parser.copy()
+jobs_page_parser.add_argument('name', help='name', location='args')
 
 
 @jobs_ns.route('')
 class QueryJobs(Resource):
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.jobs.jobs_api.get")
-    @jobs_ns.expect(user_page_parser)
-    def get(self, info):
+    @jobs_ns.expect(jobs_page_parser)
+    def get(self):
         """
         获取所有job
         """
-        args = page_parser.parse_args()
+        args = jobs_page_parser.parse_args()
         args['search'] = dict()
-        if args.get("creator"):
-            args['search']['creator'] = args.get('creator')
+        if args.get("name"):
+            args['search']['name'] = args.get('name')
         return success_return(get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children']),
                               "请求成功")
 
@@ -67,8 +66,8 @@ class QueryJobs(Resource):
             seq = args.get('seq')
             parent_id = args.get('parent_id')
             # 当前没有用户认证的步骤，所以job name需要唯一
-            new_job = new_data_obj(Jobs, **{"name": name})
-            if not new_job.get('status'):
+            new_job = new_data_obj("Jobs", **{"name": name})
+            if not new_job.get('new_one'):
                 raise Exception(f'Job name {name} exist.')
 
             the_job = new_job.get('obj')
@@ -76,12 +75,15 @@ class QueryJobs(Resource):
             the_job.run_env = run_env
             the_job.input_params = input_params
             the_job.seq = seq
-            if parent_id:
+            if parent_id and the_job.parent_id is None:
                 parent_obj = Jobs.query.get(parent_id)
                 parent_obj.children.append(the_job)
-            the_job.metadata = metadata
+            if metadata:
+                the_job.metadata = metadata
 
-            return submit_return('Successfully created job', 'Failed to create job, db commit error')
+            return submit_return('Successfully created job',
+                                 'Failed to create job, db commit error',
+                                 data={"id": the_job.id})
         except Exception as e:
             return false_return(message=f'create job failed for {e}')
 
