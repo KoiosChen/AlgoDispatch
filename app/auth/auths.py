@@ -1,7 +1,7 @@
 import jwt
 import datetime
 import time
-from ..models import Users, Elements, LoginInfo
+from ..models import Users, LoginInfo
 from .. import db, logger, SECRET_KEY
 from ..common import success_return, false_return, session_commit, code_return, sort_by_order
 from ..public_method import new_data_obj

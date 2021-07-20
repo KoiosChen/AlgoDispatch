@@ -39,29 +39,17 @@ spu_standards = db.Table('spu_standards',
                                    primary_key=True),
                          db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
-job_metadata = db.Table('job_metadata',
-                        db.Column('job_id', db.String(64), db.ForeignKey('jobs.id'), primary_key=True),
-                        db.Column('metadata_id', db.String(64), db.ForeignKey('metadata.id'),
-                                  primary_key=True),
-                        db.Column('create_at', db.DateTime, default=datetime.datetime.now))
+job_arguments = db.Table('job_arguments',
+                         db.Column('job_id', db.String(64), db.ForeignKey('jobs.id'), primary_key=True),
+                         db.Column('arguments_id', db.String(64), db.ForeignKey('arguments.id'),
+                                   primary_key=True),
+                         db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
 job_orders = db.Table('job_orders',
-                          db.Column('job_id', db.String(64), db.ForeignKey('job.id'), primary_key=True),
-                          db.Column('orders_id', db.String(64), db.ForeignKey('orders.id'), primary_key=True),
-                          db.Column('create_at', db.DateTime, default=datetime.datetime.now))
+                      db.Column('job_id', db.String(64), db.ForeignKey('job.id'), primary_key=True),
+                      db.Column('orders_id', db.String(64), db.ForeignKey('orders.id'), primary_key=True),
+                      db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
-
-class Permission:
-    USER = 0x01
-    MEMBER = 0x02
-    VIP_MEMBER = 0x04
-    BU_WAITER = 0x08
-    BU_OPERATOR = 0x10
-    BU_MANAGER = 0x20
-    FRANCHISEE_OPERATOR = 0x40
-    FRANCHISEE_MANAGER = 0x80
-    CUSTOMER_SERVICE = 0x100
-    ADMINISTRATOR = 0x200
 
 
 class OptionsDict(db.Model):
@@ -80,6 +68,79 @@ class OptionsDict(db.Model):
     memo = db.Column(db.String(100))
     __table_args__ = (UniqueConstraint('key', 'label', name='_key_label_combine'),)
     create_at = db.Column(db.DateTime, default=datetime.datetime.now)
+
+
+class Permission:
+    USER = 0x01
+    MEMBER = 0x02
+    VIP_MEMBER = 0x04
+    BU_WAITER = 0x08
+    BU_OPERATOR = 0x10
+    BU_MANAGER = 0x20
+    FRANCHISEE_OPERATOR = 0x40
+    FRANCHISEE_MANAGER = 0x80
+    CUSTOMER_SERVICE = 0x100
+    ADMINISTRATOR = 0x200
+
+
+class Users(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.String(64), primary_key=True, default=str(uuid.uuid4()))
+    email = db.Column(db.String(64), unique=True, index=True)
+    phone = db.Column(db.String(15), unique=True, index=True)
+    wechat_id = db.Column(db.String(50), unique=True, index=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    true_name = db.Column(db.String(30))
+    # 0 unknown, 1 male, 2 female
+    gender = db.Column(db.SmallInteger)
+    roles = db.relationship(
+        'Roles',
+        secondary=user_role,
+        backref=db.backref(
+            'users'
+        )
+    )
+    password_hash = db.Column(db.String(128))
+    status = db.Column(db.SmallInteger)
+    post = db.relationship('Post', backref='author', lazy='dynamic')
+    address = db.Column(db.String(200))
+    login_info = db.relationship('LoginInfo', backref='login_user', lazy='dynamic')
+
+    @property
+    def permissions(self):
+        return Permissions.query.outerjoin(Menu).outerjoin(role_menu).outerjoin(Roles).outerjoin(user_role).outerjoin(
+            Users).filter(Users.id.__eq__(self.id)).all()
+
+    @property
+    def menus(self):
+        return Menu.query.outerjoin(role_menu).outerjoin(Roles).outerjoin(user_role).outerjoin(Users). \
+            filter(
+            Users.id == self.id
+        ).order_by(Menu.order).all()
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+        self.token = None
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def verify_code(self, message):
+        """
+        验证码
+        :param message:
+        :return:
+        """
+        login_key = f"{self.id}::{self.phone}::login_message"
+        return True if redis_db.exists(login_key) and redis_db.get(login_key) == message else False
+
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 
 class Roles(db.Model):
@@ -114,17 +175,17 @@ class Classifies(db.Model):
     spu = db.relationship('SPU', backref='classifies', lazy='dynamic')
 
 
-class MetaName(db.Model):
+class ArgName(db.Model):
     __tablename__ = 'meta_name'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
     name = db.Column(db.String(50), nullable=False, unique=True, index=True)
-    values = db.relationship('MetaData', backref='standards', lazy='dynamic')
+    values = db.relationship('Arguments', backref='arg_name', uselist=False)
 
 
-class MetaData(db.Model):
-    __tablename__ = 'metadata'
+class Arguments(db.Model):
+    __tablename__ = 'arguments'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
-    meta_name_id = db.Column(db.String(64), db.ForeignKey('meta_name.id'))
+    arg_name_id = db.Column(db.String(64), db.ForeignKey('meta_name.id'))
     value = db.Column(db.String(50), nullable=False, unique=True, index=True)
 
 
@@ -157,7 +218,7 @@ class Orders(db.Model):
     desc = db.Column(db.String(200), comment="任务订单描述")
     upstream_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
     job_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
-    status = db.Column(db.Small)
+    status = db.Column(db.SmallInteger, default=1)
     output = db.Column(db.String(200), comment="输出结果")
     create_at = db.Column(db.DateTime, default=datetime.datetime.now)
     update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
@@ -183,9 +244,9 @@ class Jobs(db.Model):
     update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
     delete_at = db.Column(db.DateTime)
     #
-    metadata = db.relationship(
-        'StandardValue',
-        secondary=job_metadata,
+    arguments = db.relationship(
+        'Arguments',
+        secondary=job_arguments,
         backref=db.backref('related_jobs')
     )
 

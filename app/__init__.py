@@ -99,14 +99,17 @@ def create_app(config_name):
                 response.headers['Access-Control-Allow-Headers'] = headers
         return response
 
-    from .users import users as users_blueprint
-    app.register_blueprint(users_blueprint)
+    # from .users import users as users_blueprint
+    # app.register_blueprint(users_blueprint)
+    #
+    # from .roles import roles as roles_blueprint
+    # app.register_blueprint(roles_blueprint)
+    #
+    # from .sms import sms as sms_blueprint
+    # app.register_blueprint(sms_blueprint)
 
-    from .roles import roles as roles_blueprint
-    app.register_blueprint(roles_blueprint)
-
-    from .sms import sms as sms_blueprint
-    app.register_blueprint(sms_blueprint)
+    from .jobs import jobs as jobs_blueprint
+    app.register_blueprint(jobs_blueprint)
 
 
     return app
