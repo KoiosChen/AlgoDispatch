@@ -108,10 +108,5 @@ def create_app(config_name):
     from .sms import sms as sms_blueprint
     app.register_blueprint(sms_blueprint)
 
-    from .obj_storage import obj_storage as obj_storage_blueprint
-    app.register_blueprint(obj_storage_blueprint)
-
-    from .wechat import wechat as wechat_blueprint
-    app.register_blueprint(wechat_blueprint)
 
     return app

@@ -2,7 +2,7 @@ import json
 import random
 import threading
 import uuid
-from . import logger, db, redis_db, coupon_lock
+from . import logger, db, redis_db
 from .common import false_return, submit_return, success_return, session_commit
 from .models import *
 from sqlalchemy import and_
