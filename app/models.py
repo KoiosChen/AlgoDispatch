@@ -39,15 +39,15 @@ spu_standards = db.Table('spu_standards',
                                    primary_key=True),
                          db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
-sku_standardvalue = db.Table('sku_standardvalue',
-                             db.Column('sku_id', db.String(64), db.ForeignKey('sku.id'), primary_key=True),
-                             db.Column('standardvalue_id', db.String(64), db.ForeignKey('standard_value.id'),
-                                       primary_key=True),
-                             db.Column('create_at', db.DateTime, default=datetime.datetime.now))
+job_metadata = db.Table('job_metadata',
+                        db.Column('job_id', db.String(64), db.ForeignKey('jobs.id'), primary_key=True),
+                        db.Column('metadata_id', db.String(64), db.ForeignKey('metadata.id'),
+                                  primary_key=True),
+                        db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
-sku_shoporders = db.Table('sku_shoporders',
-                          db.Column('sku_id', db.String(64), db.ForeignKey('sku.id'), primary_key=True),
-                          db.Column('shoporders_id', db.String(64), db.ForeignKey('shop_orders.id'), primary_key=True),
+job_orders = db.Table('job_orders',
+                          db.Column('job_id', db.String(64), db.ForeignKey('job.id'), primary_key=True),
+                          db.Column('orders_id', db.String(64), db.ForeignKey('orders.id'), primary_key=True),
                           db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
 
@@ -114,17 +114,17 @@ class Classifies(db.Model):
     spu = db.relationship('SPU', backref='classifies', lazy='dynamic')
 
 
-class Standards(db.Model):
-    __tablename__ = 'standards'
+class MetaName(db.Model):
+    __tablename__ = 'meta_name'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
     name = db.Column(db.String(50), nullable=False, unique=True, index=True)
-    values = db.relationship('StandardValue', backref='standards', lazy='dynamic')
+    values = db.relationship('MetaData', backref='standards', lazy='dynamic')
 
 
-class StandardValue(db.Model):
-    __tablename__ = 'standard_value'
+class MetaData(db.Model):
+    __tablename__ = 'metadata'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
-    standard_id = db.Column(db.String(64), db.ForeignKey('standards.id'))
+    meta_name_id = db.Column(db.String(64), db.ForeignKey('meta_name.id'))
     value = db.Column(db.String(50), nullable=False, unique=True, index=True)
 
 
@@ -150,19 +150,31 @@ class JobGroup(db.Model):
     delete_at = db.Column(db.DateTime)
 
 
+class Orders(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.String(64), primary_key=True, default=make_uuid)
+    name = db.Column(db.String(100), index=True, comment="任务订单名称")
+    desc = db.Column(db.String(200), comment="任务订单描述")
+    upstream_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
+    job_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
+    status = db.Column(db.Small)
+    output = db.Column(db.String(200), comment="输出结果")
+    create_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
+    delete_at = db.Column(db.DateTime)
+
+
 class Jobs(db.Model):
     __tablename__ = 'jobs'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
     name = db.Column(db.String(100), nullable=False, index=True, comment="创建job的用户下不可重名，由程序控制")
     desc = db.Column(db.String(200), comment="任务描述")
-    run_type = db.Column(db.String(100), default='K8S', comment="任务运行类型，例如K8S，vsphere等")
-    run_config_path = db.Column(db.String(200), comment='配置文件存储路径，fdfs')
-    run_config_name = db.Column(db.String(100), comment='配置文件名称')
+    run_env = db.Column(db.String(100), default='K8S', comment="任务运行类型，例如K8S，vsphere等")
+    run_type = db.Column(db.String(100), default='job', comment='job, crontab, once')
     input_params = db.Column(db.String(200), comment="任务输入参数")
-    output_params = db.Column(db.String(200), comment="输出结果")
-    status = db.Column(db.SmallInteger, default=0, comment="1 上架； 0 下架")
+    status = db.Column(db.SmallInteger, default=0, comment="1 可用； 0 暂停使用")
     creator_id = db.Column(db.String(64), db.ForeignKey('users.id'))
-    order = db.Column(db.SmallInteger, default=0, comment="同级任务中质询先后顺序")
+    seq = db.Column(db.SmallInteger, default=0, comment="同级任务中执行先后顺序")
 
     parent_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
     parent = db.relationship('Jobs', backref="children", remote_side=[id])
@@ -170,17 +182,17 @@ class Jobs(db.Model):
     create_at = db.Column(db.DateTime, default=datetime.datetime.now)
     update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
     delete_at = db.Column(db.DateTime)
-
-    values = db.relationship(
+    #
+    metadata = db.relationship(
         'StandardValue',
-        secondary=sku_standardvalue,
-        backref=db.backref('sku')
+        secondary=job_metadata,
+        backref=db.backref('related_jobs')
     )
 
-    order = db.relationship(
-        'ShopOrders',
-        secondary=sku_shoporders,
-        backref=db.backref('order_sku')
+    orders = db.relationship(
+        'JobOrders',
+        secondary=job_orders,
+        backref=db.backref('related_jobs')
     )
 
 
