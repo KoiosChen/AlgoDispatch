@@ -124,6 +124,9 @@ def _make_table(fields, table, strainer=None):
             if table.shop_order_id:
                 table_name = table.related_order.__class__.__name__
                 tmp[f] = get_table_data_by_id(eval(table_name), table.shop_order_id, appends=['real_payed_cash_fee'])
+        elif f == 'config_files':
+            if table.config_files:
+                tmp[f] = get_table_data_by_id(eval(table.config_files.__class__.__name__), table.config_files.id)
         else:
             r = getattr(table, f)
             if isinstance(r, int) or isinstance(r, float):
