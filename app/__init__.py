@@ -67,7 +67,8 @@ ssender = SmsSingleSender(appid, appkey)
 if os.path.exists('/etc/fdfs/client.conf'):
     fdfs_client = Fdfs_client('/etc/fdfs/client.conf')
 else:
-    fdfs_client = Fdfs_client('/Users/Peter/python/algoin2out/app/client.conf')
+    # fdfs_client = Fdfs_client('/Users/Peter/python/algoin2out/app/client.conf')
+    fdfs_client = ""
 
 
 def create_app(config_name):

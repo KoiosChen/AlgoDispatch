@@ -48,7 +48,7 @@ class QueryJobs(Resource):
         args['search'] = dict()
         if args.get("name"):
             args['search']['name'] = args.get('name')
-        return success_return(get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children']),
+        return success_return(get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
                               "请求成功")
 
     @jobs_ns.doc(body=register_parser)
