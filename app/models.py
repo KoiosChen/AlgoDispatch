@@ -43,7 +43,7 @@ class Classifies(db.Model):
 
 
 class ArgName(db.Model):
-    __tablename__ = 'meta_name'
+    __tablename__ = 'arg_name'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
     name = db.Column(db.String(50), nullable=False, unique=True, index=True)
     values = db.relationship('Arguments', backref='arg_name', uselist=False)
@@ -52,8 +52,8 @@ class ArgName(db.Model):
 class Arguments(db.Model):
     __tablename__ = 'arguments'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
-    arg_name_id = db.Column(db.String(64), db.ForeignKey('meta_name.id'))
-    value = db.Column(db.String(50), nullable=False, unique=True, index=True)
+    arg_name_id = db.Column(db.String(64), db.ForeignKey('arg_name.id'))
+    value = db.Column(db.String(50), nullable=False, index=True)
 
 
 class Orders(db.Model):
@@ -82,9 +82,12 @@ class Jobs(db.Model):
     # creator_id = db.Column(db.String(64), db.ForeignKey('users.id'))
     seq = db.Column(db.SmallInteger, default=0, comment="同级任务中执行先后顺序")
     classify = db.Column(db.String(64), db.ForeignKey('classifies.id'))
+    master = db.Column(db.String(20), comment='Kubernetes Master Name')
 
     parent_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
     parent = db.relationship('Jobs', backref="children", remote_side=[id])
+
+    config_files = db.relationship('ConfigFiles', backref='job', uselist=False)
 
     create_at = db.Column(db.DateTime, default=datetime.datetime.now)
     update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
@@ -132,6 +135,20 @@ class SMSApp(db.Model):
     callback_url = db.Column(db.String(100), comment="短信回调URL")
     create_at = db.Column(db.DateTime, default=datetime.datetime.now)
 
+
+class ConfigFiles(db.Model):
+    __tablename__ = 'config_files'
+    id = db.Column(db.String(64), primary_key=True, default=make_uuid)
+    filename = db.Column(db.String(100), index=True)
+    storage = db.Column(db.String(200), index=True)
+    job_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
+    status = db.Column(db.SmallInteger, default=1, comment='1,正常，0, 停用')
+    create_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
+    delete_at = db.Column(db.DateTime)
+
+
+KubeMaster = {'k8sm01': './k8sm01.conf', 'k8sm02': './k8sm02.conf'}
 
 aes_key = 'koiosr2d2c3p0000'
 

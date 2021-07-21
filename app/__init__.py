@@ -10,9 +10,9 @@ from sqlalchemy.pool import NullPool
 from flask_restplus import Api
 from qcloudsms_py import SmsSingleSender, SmsMultiSender
 import threading
+from fdfs_client.client import *
 from flask_session import Session
 from werkzeug.middleware.proxy_fix import ProxyFix
-
 
 # class SQLAlchemy(SQLAlchemyBase):
 #     def apply_driver_hacks(self, app, info, options):
@@ -27,7 +27,7 @@ redis_db = redis.Redis(host='localhost', port=6379, db=7, decode_responses=True)
 db = SQLAlchemy()
 scheduler = APScheduler()
 sess = Session()
-default_api = Api(title='Infinicalc API', version='v0.1', prefix='/api', contact='chjz1226@gmail.com')
+default_api = Api(title='AlgoSpace Dispatch API', version='v0.1', prefix='/api', contact='jinzhang.chen@algospace.com')
 
 # 用于处理订单建议书的队列
 work_q = queue.Queue(maxsize=100)
@@ -63,6 +63,11 @@ ssender = SmsSingleSender(appid, appkey)
 # coupon_lock = threading.Lock()
 # order_lock = threading.Lock()
 # sku_lock = threading.Lock()
+
+if os.path.exists('/etc/fdfs/client.conf'):
+    fdfs_client = Fdfs_client('/etc/fdfs/client.conf')
+else:
+    fdfs_client = Fdfs_client('/Users/Peter/python/algoin2out/app/client.conf')
 
 
 def create_app(config_name):
@@ -110,6 +115,5 @@ def create_app(config_name):
 
     from .jobs import jobs as jobs_blueprint
     app.register_blueprint(jobs_blueprint)
-
 
     return app

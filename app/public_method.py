@@ -2,7 +2,7 @@ import json
 import random
 import threading
 import uuid
-from . import logger, db, redis_db
+from . import logger, db, redis_db, fdfs_client
 from .common import false_return, submit_return, success_return, session_commit
 from .models import *
 from sqlalchemy import and_
@@ -297,3 +297,12 @@ def create_member_card_num():
     today = datetime.datetime.now()
     return "5199" + str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + str(
         random.randint(1000, 9999))
+
+
+def upload_fdfs(file):
+    filename = file.filename
+    extension = filename.split('.')[-1] if '.' in filename else ''
+    ret = fdfs_client.upload_by_buffer(file.read(), file_ext_name=extension)
+    logger.info(ret)
+    fdfs_store_path = ret['Remote file_id'].decode()
+    return fdfs_store_path
