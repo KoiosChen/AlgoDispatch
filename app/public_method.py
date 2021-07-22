@@ -309,3 +309,14 @@ def upload_fdfs(file):
     logger.info(ret)
     fdfs_store_path = ret['Remote file_id'].decode()
     return fdfs_store_path
+
+
+def run_downstream(**kwargs):
+    try:
+        job_id = kwargs['job_id']
+        job_obj = Jobs.query.get(job_id)
+        if not job_obj:
+            raise Exception(f"{job_id} does not exist.")
+        return None
+    except Exception as e:
+        return false_return(message=f"{e}")

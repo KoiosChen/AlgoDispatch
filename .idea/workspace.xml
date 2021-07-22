@@ -2,7 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表">
+      <change afterPath="$PROJECT_DIR$/app/conf/job.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/conf/k8sm02_admin.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/pykube.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/infinicalc_wechat.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/infinicalc_wechat.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/orders/orders_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/orders/orders_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/public_method.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/public_method.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hmd_job_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/hmd_job_status.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +36,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -66,6 +76,7 @@
       <recent name="$PROJECT_DIR$/app/orders" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\jinzhang.chen\PycharmProjects\AlgospaceDispatch\AlgoDispatch\app\conf" />
       <recent name="$PROJECT_DIR$/app" />
       <recent name="$PROJECT_DIR$/app/promotions" />
       <recent name="$PROJECT_DIR$/app/roles" />
@@ -87,6 +98,27 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="hmd_job_status" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="infinicalc_wechat" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/hmd_job_status.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -143,14 +175,15 @@
       <item itemvalue="Python.algo_dispatch" />
       <item itemvalue="Python.models" />
       <item itemvalue="Python.qq_lbs" />
+      <item itemvalue="Python.hmd_job_status" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.hmd_job_status" />
         <item itemvalue="Python.qq_lbs" />
         <item itemvalue="Python.models" />
         <item itemvalue="Python.qq_lbs" />
         <item itemvalue="Python.models" />
-        <item itemvalue="Python.qq_lbs" />
       </list>
     </recent_temporary>
   </component>
@@ -275,13 +308,6 @@
       <workItem from="1614478333331" duration="360000" />
       <workItem from="1614478725965" duration="12936000" />
       <workItem from="1614607464778" duration="26122000" />
-    </task>
-    <task id="LOCAL-00060" summary="默认更改列表">
-      <created>1613194087414</created>
-      <option name="number" value="00060" />
-      <option name="presentableId" value="LOCAL-00060" />
-      <option name="project" value="LOCAL" />
-      <updated>1613194087414</updated>
     </task>
     <task id="LOCAL-00061" summary="默认更改列表">
       <created>1613202104275</created>
@@ -619,7 +645,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626866085663</updated>
     </task>
-    <option name="localTasksCounter" value="109" />
+    <task id="LOCAL-00109" summary="默认更改列表">
+      <created>1626917573408</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1626917573409</updated>
+    </task>
+    <option name="localTasksCounter" value="110" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

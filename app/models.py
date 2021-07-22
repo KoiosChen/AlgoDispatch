@@ -150,7 +150,10 @@ class ConfigFiles(db.Model):
     delete_at = db.Column(db.DateTime)
 
 
-KubeMaster = {'k8sm01': './k8sm01.conf', 'k8sm02': './k8sm02.conf'}
+KubeMaster = {'k8sm01': './k8sm01.conf',
+              'k8sm02': r"C:\Users\jinzhang.chen\PycharmProjects\AlgospaceDispatch\AlgoDispatch\app\conf\k8sm02_admin.yaml"}
+
+FDFS_URL = "http://shaxyxa-fdfs01.xyxa.cnsh.algospace.org/"
 
 aes_key = 'koiosr2d2c3p0000'
 
