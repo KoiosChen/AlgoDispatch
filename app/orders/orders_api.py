@@ -48,7 +48,7 @@ class QueryOrders(Resource):
     @permission_required("app.jobs.jobs_api.post")
     def post(self, **kwargs):
         """
-        添加任务执行订单
+        添加任务执行订单，一般为初始任务或者crontab任务会直接使用此接口
         """
         try:
             args = register_parser.parse_args()
@@ -65,9 +65,9 @@ class QueryOrders(Resource):
 
             the_order = new_order.get('obj')
             the_order.desc = desc
-            the_order.upstream_id = upstream_id
             the_order.job_id = job_id
             the_order.status = status
+            the_order.output = output
             if status == 2:
                 # 如果是2，表示complete，查找下游任务并开始
                 pass

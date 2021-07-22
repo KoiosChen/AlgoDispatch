@@ -64,7 +64,7 @@ class Orders(db.Model):
     parent_id = db.Column(db.String(64), db.ForeignKey('orders.id'))
     parent = db.relationship('Orders', backref="children", remote_side=[id])
     job_id = db.Column(db.String(64), db.ForeignKey('jobs.id'))
-    run_times = db.Column(db.SmallInteger, default=0)
+    run_times = db.Column(db.SmallInteger, default=0, comment='如果有下游job，则以此计数，通过children来获取其下游job')
     status = db.Column(db.SmallInteger, default=1)
     output = db.Column(db.String(200), comment="输出结果")
     create_at = db.Column(db.DateTime, default=datetime.datetime.now)
