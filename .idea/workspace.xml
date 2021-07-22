@@ -2,16 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表">
-      <change afterPath="$PROJECT_DIR$/app/conf/job.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/conf/k8sm02_admin.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/pykube.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/infinicalc_wechat.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/infinicalc_wechat.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/orders/orders_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/orders/orders_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/jobs/jobs_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/jobs/jobs_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/public_method.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/public_method.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hmd_job_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/hmd_job_status.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/pykube.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/pykube.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -308,13 +302,6 @@
       <workItem from="1614478333331" duration="360000" />
       <workItem from="1614478725965" duration="12936000" />
       <workItem from="1614607464778" duration="26122000" />
-    </task>
-    <task id="LOCAL-00061" summary="默认更改列表">
-      <created>1613202104275</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1613202104275</updated>
     </task>
     <task id="LOCAL-00062" summary="默认更改列表">
       <created>1614175768186</created>
@@ -652,7 +639,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626917573409</updated>
     </task>
-    <option name="localTasksCounter" value="110" />
+    <task id="LOCAL-00110" summary="默认更改列表">
+      <created>1626947161773</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1626947161774</updated>
+    </task>
+    <option name="localTasksCounter" value="111" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

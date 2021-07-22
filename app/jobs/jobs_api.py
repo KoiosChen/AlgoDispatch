@@ -16,9 +16,9 @@ jobs_ns = default_api.namespace('jobs', path='/jobs',
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('name', required=True, help='任务名称')
 register_parser.add_argument('desc', help='任务描述')
-register_parser.add_argument('run_env', help='运行环境，k8s，docker， docker-compose')
-register_parser.add_argument('run_type', help='运行类型，job，crontab，once等')
-register_parser.add_argument('input_params', help='启动job所需要的参数')
+register_parser.add_argument('run_env', help='运行环境，选择K8S的Master， 目前支持k8sm01, k8sm02')
+register_parser.add_argument('run_type', help='运行类型，job，cronjob等')
+register_parser.add_argument('input_params', help='重置yaml配置中的command， 目前仅支持一个container')
 register_parser.add_argument('seq', help='同级任务执行顺序')
 register_parser.add_argument('parent_id', help='父级job ID， 可通过job get方法获取ID')
 register_parser.add_argument('master', help='指定K8S master')
@@ -58,9 +58,6 @@ class QueryJobs(Resource):
         """
         添加任务定义
         """
-        run_env_validate = {"k8s": {"job": ["master"],
-                                    "crontab": ["master"]},
-                            "docker": ["docker_host"]}
         try:
             args = register_parser.parse_args()
             name = args.get('name')
@@ -68,7 +65,7 @@ class QueryJobs(Resource):
             run_env = args.get('run_env')
             run_type = args.get('run_type')
             input_params = args.get('input_params')
-            arguments = args.get('arguments')
+            # arguments = args.get('arguments')
             seq = args.get('seq')
             parent_id = args.get('parent_id')
             upload_object = args['file']
@@ -86,14 +83,14 @@ class QueryJobs(Resource):
             if parent_id and the_job.parent_id is None:
                 parent_obj = Jobs.query.get(parent_id)
                 parent_obj.children.append(the_job)
-            if arguments:
-                for key, value in arguments:
-                    if key not in run_env_validate.get(run_env):
-                        raise Exception(f"配置参数{key}和运行环境{run_env}不匹配, 当前运行环境允许参数{run_env_validate.get(run_env)}")
-                    arg_name_obj = new_data_obj('ArgName', **{"name": key})
-                    arg_name_id = arg_name_obj.get('obj').id
-                    new_arguments = new_data_obj('Arguments', **{"arg_name_id": arg_name_id, "value": value})
-                    the_job.arguments.append(new_arguments.get('obj'))
+            # if arguments:
+            #     for key, value in arguments:
+            #         if key not in run_env_validate.get(run_env):
+            #             raise Exception(f"配置参数{key}和运行环境{run_env}不匹配, 当前运行环境允许参数{run_env_validate.get(run_env)}")
+            #         arg_name_obj = new_data_obj('ArgName', **{"name": key})
+            #         arg_name_id = arg_name_obj.get('obj').id
+            #         new_arguments = new_data_obj('Arguments', **{"arg_name_id": arg_name_id, "value": value})
+            #         the_job.arguments.append(new_arguments.get('obj'))
 
             if upload_object:
                 print(args.get('filename'))

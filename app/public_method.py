@@ -10,6 +10,7 @@ import datetime
 import traceback
 from flask import session
 from decimal import Decimal
+from app.pykube import KubeMaster
 
 
 def format_decimal(num, zero_format="0.00", to_str=False):
@@ -296,9 +297,9 @@ def create_member_card_by_invitation(current_user, invitation_code):
                          "新增会员卡失败")
 
 
-def create_member_card_num():
+def create_member_card_num(prefix='777'):
     today = datetime.datetime.now()
-    return "5199" + str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + str(
+    return prefix + str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + str(
         random.randint(1000, 9999))
 
 
@@ -311,12 +312,37 @@ def upload_fdfs(file):
     return fdfs_store_path
 
 
+def run_job(job):
+    """
+    目前仅支持k8s运行job
+    :param job:
+    :return:
+    """
+    kube_job = KubeMaster(job.run_env, namespace='hmd')
+    return kube_job.start_job(job_id=job.id)
+
+
 def run_downstream(**kwargs):
+    """
+
+    :param kwargs: job_id 未当前任务的ID，即父级ID， 用来启动下游JOB
+    :return:
+    """
     try:
         job_id = kwargs['job_id']
-        job_obj = Jobs.query.get(job_id)
-        if not job_obj:
+        job = Jobs.query.get(job_id)
+        if not job:
             raise Exception(f"{job_id} does not exist.")
-        return None
+
+        child_jobs = job.children
+
+        if not child_jobs:
+            return success_return(message='no children job')
+
+        run_result = []
+        for child_job in child_jobs:
+            run_result.append(run_job(child_job))
+
+        return success_return(data=run_result)
     except Exception as e:
         return false_return(message=f"{e}")
