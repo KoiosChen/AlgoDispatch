@@ -11,6 +11,7 @@ import time
 class KubeMgmt:
     def __init__(self, master, namespace='default'):
         # Configs can be set in Configuration class directly or using helper utility
+        logger.debug(KubeMaster.get(master))
         config.load_kube_config(config_file=KubeMaster.get(master))
         self.v1 = client.CoreV1Api()
         self.batch = client.BatchV1Api()
