@@ -152,8 +152,8 @@ PermissionIP = redis_db.lrange('permission_ip', 0, -1)
 
 PATH_PREFIX = os.path.abspath(os.path.dirname(__file__))
 
-KubeMaster = {'k8sm01': os.path.join(PATH_PREFIX, r"/conf/k8sm01_admin.yaml"),
-              'k8sm02': os.path.join(PATH_PREFIX, f"/conf/k8sm02_admin.yaml")}
+KubeMaster = {'k8sm01': os.path.join(PATH_PREFIX, "conf/k8sm01_admin.yaml"),
+              'k8sm02': os.path.join(PATH_PREFIX, "conf/k8sm02_admin.yaml")}
 
 CERT_PATH = PATH_PREFIX + '/cert/apiclient_cert.pem'
 
