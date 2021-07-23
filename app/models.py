@@ -140,9 +140,6 @@ class ConfigFiles(db.Model):
     delete_at = db.Column(db.DateTime)
 
 
-KubeMaster = {'k8sm01': './k8sm01.conf',
-              'k8sm02': r"C:\Users\jinzhang.chen\PycharmProjects\AlgospaceDispatch\AlgoDispatch\app\conf\k8sm02_admin.yaml"}
-
 FDFS_URL = "http://shaxyxa-fdfs01.xyxa.cnsh.algospace.org/"
 
 aes_key = 'koiosr2d2c3p0000'
@@ -154,6 +151,9 @@ FIRST_PAGE_POPUP_URL = "IMAGE"
 PermissionIP = redis_db.lrange('permission_ip', 0, -1)
 
 PATH_PREFIX = os.path.abspath(os.path.dirname(__file__))
+
+KubeMaster = {'k8sm01': os.path.join(PATH_PREFIX, r"/conf/k8sm01_admin.yaml"),
+              'k8sm02': os.path.join(PATH_PREFIX, f"/conf/k8sm02_admin.yaml")}
 
 CERT_PATH = PATH_PREFIX + '/cert/apiclient_cert.pem'
 
