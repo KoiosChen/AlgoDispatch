@@ -28,6 +28,7 @@ register_parser.add_argument('file', required=True, type=FileStorage, location='
 
 update_job_parser = register_parser.copy()
 update_job_parser.replace_argument('name', required=False, help='任务名称')
+update_job_parser.replace_argument('file', required=False, type=FileStorage, location='files')
 
 return_json = jobs_ns.model('ReturnRegister', return_dict)
 
@@ -48,8 +49,9 @@ class QueryJobs(Resource):
         args['search'] = dict()
         if args.get("name"):
             args['search']['name'] = args.get('name')
-        return success_return(get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
-                              "请求成功")
+        return success_return(
+            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
+            "请求成功")
 
     @jobs_ns.doc(body=register_parser)
     @jobs_ns.marshal_with(return_json)
@@ -68,8 +70,7 @@ class QueryJobs(Resource):
             # arguments = args.get('arguments')
             seq = args.get('seq')
             parent_id = args.get('parent_id')
-            upload_object = args['file']
-            args['filename'] = upload_object.filename
+            upload_object = args.get('file')
             # 当前没有用户认证的步骤，所以job name需要唯一
             new_job = new_data_obj("Jobs", **{"name": name})
             if not new_job.get('new_one'):
@@ -93,7 +94,6 @@ class QueryJobs(Resource):
             #         the_job.arguments.append(new_arguments.get('obj'))
 
             if upload_object:
-                print(args.get('filename'))
                 file_store_path = upload_fdfs(upload_object)
                 new_config_file = new_data_obj("ConfigFiles", **{"filename": upload_object.filename,
                                                                  "storage": file_store_path,
@@ -106,24 +106,44 @@ class QueryJobs(Resource):
             return false_return(message=f'create job failed for {e}')
 
 
-@jobs_ns.route('/<string:job_id>')
-@jobs_ns.expect(head_parser)
-@jobs_ns.param("job_id", "定义的JOB ID, 通过/job的get方法查询")
-class JobById(Resource):
+@jobs_ns.route('/<string:job_name>')
+@jobs_ns.param("job_name", "需要更新的job的name")
+class JobByName(Resource):
     @jobs_ns.doc(body=update_job_parser)
     @jobs_ns.marshal_with(return_json)
-    @permission_required("app.jobs.jobs_api.job_by_id.put")
+    @permission_required("app.jobs.jobs_api.job_by_name.put")
     def put(self, **kwargs):
         """
         修改任务定义
         """
-        args = update_job_parser.parse_args()
-        user = Jobs.query.get(kwargs['job_id'])
-        if user:
-            fields_ = table_fields(Jobs, appends=['role_id', 'password'], removes=['password_hash'])
-            return modify_user_profile(args, user, fields_)
-        else:
-            return false_return(message="用户不存在"), 400
+        try:
+            current_job = new_data_obj("Jobs", **{"name": kwargs['job_name']})
+            if current_job.get('new_one'):
+                raise Exception(f'Job name {kwargs["job_name"]} does not exist.')
+
+            args = update_job_parser.parse_args()
+
+            for key, value in args.items():
+                if key != 'file':
+                    if hasattr(current_job['obj'], key) and value is not None:
+                        setattr(current_job['obj'], key, value)
+
+            upload_object = args.get('file')
+
+            if upload_object:
+                print(upload_object.filename)
+                current_config = current_job['obj'].config_files.query.filter_by(status=1).first()
+                current_config.status = 0
+                file_store_path = upload_fdfs(upload_object)
+                new_config_file = new_data_obj("ConfigFiles", **{"filename": upload_object.filename,
+                                                                 "storage": file_store_path,
+                                                                 "job_id": current_job['obj'].id})
+
+            return submit_return(f'Successfully updated job, job_name={kwargs["job_name"]}',
+                                 'Failed to update job, db commit error')
+
+        except Exception as e:
+            return false_return(message=f'update job failed, {e}'), 400
 
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.users.users_api.user_info")

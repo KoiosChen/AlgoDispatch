@@ -2,7 +2,6 @@ from app import db, redis_db
 import datetime
 import os
 import uuid
-from sqlalchemy import UniqueConstraint
 import random
 
 
@@ -28,11 +27,6 @@ job_arguments = db.Table('job_arguments',
                          db.Column('arguments_id', db.String(64), db.ForeignKey('arguments.id'),
                                    primary_key=True),
                          db.Column('create_at', db.DateTime, default=datetime.datetime.now))
-
-job_orders = db.Table('job_orders',
-                      db.Column('job_id', db.String(64), db.ForeignKey('jobs.id'), primary_key=True),
-                      db.Column('orders_id', db.String(64), db.ForeignKey('orders.id'), primary_key=True),
-                      db.Column('create_at', db.DateTime, default=datetime.datetime.now))
 
 
 class Classifies(db.Model):
@@ -101,11 +95,7 @@ class Jobs(db.Model):
         backref=db.backref('related_jobs')
     )
 
-    orders = db.relationship(
-        'Orders',
-        secondary=job_orders,
-        backref=db.backref('related_jobs')
-    )
+    orders = db.relationship('Orders', backref='related_jobs', lazy='dynamic')
 
 
 class SMSTemplate(db.Model):

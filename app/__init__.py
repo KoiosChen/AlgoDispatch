@@ -117,4 +117,7 @@ def create_app(config_name):
     from .jobs import jobs as jobs_blueprint
     app.register_blueprint(jobs_blueprint)
 
+    from .orders import orders as orders_blueprint
+    app.register_blueprint(orders_blueprint)
+
     return app

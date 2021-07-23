@@ -1,16 +1,11 @@
-import json
-import random
-import threading
-import uuid
-from . import logger, db, redis_db, fdfs_client
-from .common import false_return, submit_return, success_return, session_commit
+from . import logger, fdfs_client
+from .common import false_return, success_return, session_commit
 from .models import *
 from sqlalchemy import and_
 import datetime
 import traceback
-from flask import session
 from decimal import Decimal
-from app.pykube import KubeMaster
+from app.pykube import KubeMgmt
 
 
 def format_decimal(num, zero_format="0.00", to_str=False):
@@ -52,7 +47,7 @@ def new_data_obj(table, **kwargs):
     return {'obj': __obj, 'new_one': new_one}
 
 
-def table_fields(table, appends=[], removes=[]):
+def table_fields(table, appends: list, removes: list):
     original_fields = getattr(getattr(table, '__table__'), 'columns').keys()
     for a in appends:
         original_fields.append(a)
@@ -114,8 +109,6 @@ def _make_table(fields, table, strainer=None):
             for value in t1:
                 tmp1.append({'value': value.value, 'standard_name': value.standards.name})
             tmp[f] = tmp1
-        elif f == 'classifies':
-            tmp[f] = get_table_data_by_id(Classifies, table.classifies.id)
         elif f == 'standards':
             if table.standards:
                 tmp[f] = [{"id": e.id, "name": e.name} for e in table.standards]
@@ -181,7 +174,11 @@ def _advance_search(table, advance_search):
     return and_fields_list
 
 
-def get_table_data(table, args, appends=[], removes=[], advance_search=None, order_by=None):
+def get_table_data(table, args, appends=None, removes=None, advance_search=None, order_by=None):
+    if appends is None:
+        appends = []
+    if removes is None:
+        removes = []
     page = args.get('page')
     current = args.get('current')
     size = args.get('size')
@@ -233,7 +230,11 @@ def get_table_data(table, args, appends=[], removes=[], advance_search=None, ord
     return {"records": r, "total": page_len, "size": size, "current": current} if page == 'true' else {"records": r}
 
 
-def get_table_data_by_id(table, key_id, appends=[], removes=[], strainer=None, search=None, advance_search=None):
+def get_table_data_by_id(table, key_id, appends=None, removes=None, strainer=None, search=None, advance_search=None):
+    if removes is None:
+        removes = []
+    if appends is None:
+        appends = []
     fields = table_fields(table, appends, removes)
     base_sql = table.query
     if search is None and advance_search is None:
@@ -252,51 +253,6 @@ def get_table_data_by_id(table, key_id, appends=[], removes=[], strainer=None, s
         return {}
 
 
-def create_member_card_by_invitation(current_user, invitation_code):
-    member_card = current_user.member_card.first()
-
-    # 此处目前仅支持邀请代理商
-    if member_card and int(member_card.member_type) >= int(invitation_code.tobe_type) and int(
-            member_card.grade) <= int(invitation_code.tobe_level):
-        return false_return(message="当前用户已经是此级别(或更高级别），不可使用此邀请码"), 400
-
-    if not member_card:
-        card_no = create_member_card_num()
-        new_member_card = new_data_obj("MemberCards", **{"card_no": card_no, "customer_id": current_user.id,
-                                                         "open_date": datetime.datetime.now()})
-    else:
-        card_no = member_card.card_no
-        new_member_card = {'obj': member_card, 'status': False}
-
-    a = {"member_type": invitation_code.tobe_type,
-         "grade": invitation_code.tobe_level,
-         "validate_date": datetime.datetime.now() + datetime.timedelta(days=365)}
-
-    for k, v in a.items():
-        setattr(new_member_card['obj'], k, v)
-
-    if new_member_card:
-        if hasattr(invitation_code, "used_customer_id"):
-            invitation_code.used_customer_id = current_user.id
-        if hasattr(invitation_code, "new_member_card_id"):
-            invitation_code.new_member_card_id = new_member_card['obj'].id
-        if hasattr(invitation_code, "used_at"):
-            invitation_code.used_at = datetime.datetime.now()
-        if hasattr(invitation_code, "invitees"):
-            invitation_code.invitees.append(new_member_card['obj'])
-
-        current_user.invitor_id = invitation_code.manager_customer_id
-        current_user.interest_id = invitation_code.interest_customer_id
-        current_user.role_id = 2
-        db.session.add(invitation_code)
-        db.session.add(current_user)
-    else:
-        return false_return(message="邀请码有效，但是新增会员卡失败"), 400
-
-    return submit_return(f"新增会员卡成功，卡号{card_no}, 会员级别{invitation_code.tobe_type} {invitation_code.tobe_level}",
-                         "新增会员卡失败")
-
-
 def create_member_card_num(prefix='777'):
     today = datetime.datetime.now()
     return prefix + str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + str(
@@ -312,14 +268,28 @@ def upload_fdfs(file):
     return fdfs_store_path
 
 
-def run_job(job):
+def run_job(job, order):
     """
     目前仅支持k8s运行job
+    :param order:
     :param job:
     :return:
     """
-    kube_job = KubeMaster(job.run_env, namespace='hmd')
-    return kube_job.start_job(job_id=job.id)
+    try:
+        kube_job = KubeMgmt(job.run_env)
+        kube_job.load_yaml(job.id)
+        kube_job.cfg['metadata']['name'] = f"{order.name}-{order.run_times}"
+        start_result = kube_job.start_job()
+        if start_result.get('code') != 'success':
+            raise Exception(start_result['message'])
+        order.run_times += 1
+        job_name = kube_job.cfg['metadata']['name']
+        # kube_job.watch_job(job_name)
+        start_result['data']['child_order_id'] = order.id
+        return start_result
+    except Exception as e:
+        traceback.print_exc()
+        return false_return(message=str(e))
 
 
 def run_downstream(**kwargs):
@@ -330,6 +300,8 @@ def run_downstream(**kwargs):
     """
     try:
         job_id = kwargs['job_id']
+        upstream_order_id = kwargs.get('upstream_order_id')
+        force = kwargs.get('force')
         job = Jobs.query.get(job_id)
         if not job:
             raise Exception(f"{job_id} does not exist.")
@@ -339,10 +311,32 @@ def run_downstream(**kwargs):
         if not child_jobs:
             return success_return(message='no children job')
 
-        run_result = []
+        run_results = []
         for child_job in child_jobs:
-            run_result.append(run_job(child_job))
+            if child_job.run_env in ('k8sm01', 'k8sm02'):
+                new_child_job_order = new_data_obj("Orders", **{"parent_id": upstream_order_id,
+                                                                "job_id": child_job.id})
 
-        return success_return(data=run_result)
+                if not new_child_job_order.get('new_one') and force == 0:
+                    raise Exception('下游任务已执行')
+
+                if not new_child_job_order['obj'].name:
+                    new_child_job_order['obj'].name = f"{Orders.query.get(upstream_order_id).name}-{child_job.name}"
+
+                run_results.append(run_job(child_job, new_child_job_order.get('obj')))
+        failed_list = list()
+        success_list = list()
+        if run_results:
+            for result in run_results:
+                if result.get('code') != 'success':
+                    failed_list.append(result.get('message'))
+                else:
+                    success_list.append(result.get('data'))
+
+        if not failed_list:
+            return success_return(message='run job success', data=success_list)
+        else:
+            return false_return(data=failed_list)
     except Exception as e:
+        traceback.print_exc()
         return false_return(message=f"{e}")

@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/common.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/jobs/jobs_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/jobs/jobs_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/orders/orders_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/orders/orders_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/public_method.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/public_method.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/pykube.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/pykube.py" afterDir="false" />
     </list>
@@ -302,13 +306,6 @@
       <workItem from="1614478333331" duration="360000" />
       <workItem from="1614478725965" duration="12936000" />
       <workItem from="1614607464778" duration="26122000" />
-    </task>
-    <task id="LOCAL-00062" summary="默认更改列表">
-      <created>1614175768186</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1614175768186</updated>
     </task>
     <task id="LOCAL-00063" summary="默认更改列表">
       <created>1614176541698</created>
@@ -646,7 +643,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626947161774</updated>
     </task>
-    <option name="localTasksCounter" value="111" />
+    <task id="LOCAL-00111" summary="默认更改列表">
+      <created>1626949554594</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1626949554594</updated>
+    </task>
+    <option name="localTasksCounter" value="112" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -687,6 +691,16 @@
           <url>file://$PROJECT_DIR$/app/shopping_cart/shop_cart_api.py</url>
           <line>164</line>
           <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/orders/orders_api.py</url>
+          <line>80</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/jobs/jobs_api.py</url>
+          <line>123</line>
+          <option name="timeStamp" value="81" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

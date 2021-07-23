@@ -29,7 +29,7 @@ def session_commit():
         return false_return(message=str(e)), 400
 
 
-def submit_return(success_msg, false_msg, data):
+def submit_return(success_msg, false_msg, data=None):
     if session_commit().get("code") == "success":
         return success_return(message=success_msg, data=data)
     else:
