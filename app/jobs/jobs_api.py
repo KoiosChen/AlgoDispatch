@@ -146,9 +146,12 @@ class JobByName(Resource):
             return false_return(message=f'update job failed, {e}'), 400
 
     @jobs_ns.marshal_with(return_json)
-    @permission_required("app.users.users_api.user_info")
+    @permission_required("app.jobs.jobs_api.job_by_name.get")
     def get(self, **kwargs):
         """
         通过user id获取后端用户信息
         """
-        return success_return(get_table_data_by_id(Users, kwargs['user_id'], ['roles'], ['password_hash']), "请求成功")
+        args = {'search': {'name': kwargs['name']}}
+        return success_return(
+            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
+            "请求成功")

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表" />
+    <list default="true" id="43720869-6696-4405-8243-086acaff61ea" name="默认更改列表" comment="默认更改列表">
+      <change beforePath="$PROJECT_DIR$/app/jobs/jobs_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/jobs/jobs_api.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -297,13 +299,6 @@
       <workItem from="1614478333331" duration="360000" />
       <workItem from="1614478725965" duration="12936000" />
       <workItem from="1614607464778" duration="26122000" />
-    </task>
-    <task id="LOCAL-00066" summary="默认更改列表">
-      <created>1614182030447</created>
-      <option name="number" value="00066" />
-      <option name="presentableId" value="LOCAL-00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1614182030447</updated>
     </task>
     <task id="LOCAL-00067" summary="默认更改列表">
       <created>1614349452659</created>
@@ -641,7 +636,14 @@
       <option name="project" value="LOCAL" />
       <updated>1627034237553</updated>
     </task>
-    <option name="localTasksCounter" value="115" />
+    <task id="LOCAL-00115" summary="默认更改列表">
+      <created>1627034771328</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1627034771328</updated>
+    </task>
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -687,11 +689,6 @@
           <url>file://$PROJECT_DIR$/app/orders/orders_api.py</url>
           <line>80</line>
           <option name="timeStamp" value="79" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/app/jobs/jobs_api.py</url>
-          <line>123</line>
-          <option name="timeStamp" value="81" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
