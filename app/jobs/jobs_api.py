@@ -151,7 +151,7 @@ class JobByName(Resource):
         """
         通过user id获取后端用户信息
         """
-        args = {'search': {'name': kwargs['name']}}
+        args = {'search': {'name': kwargs['job_name']}}
         return success_return(
             get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
             "请求成功")
