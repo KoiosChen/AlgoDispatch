@@ -6,6 +6,7 @@ import datetime
 import traceback
 from decimal import Decimal
 from app.pykube import KubeMgmt
+import re
 
 
 def format_decimal(num, zero_format="0.00", to_str=False):
@@ -268,7 +269,7 @@ def upload_fdfs(file):
     return fdfs_store_path
 
 
-def run_job(job, order):
+def run_job(job, order, params):
     """
     目前仅支持k8s运行job
     :param order:
@@ -279,6 +280,10 @@ def run_job(job, order):
         kube_job = KubeMgmt(job.run_env)
         kube_job.load_yaml(job.id)
         kube_job.cfg['metadata']['name'] = f"{order.name}-{order.run_times}"
+        yaml_command = kube_job.cfg['spec']['template']['spec']['containers'][0]['command']
+        for arg in yaml_command:
+            if re.search(r'^<.*>$', arg):
+                user, locate, tag = re.findall(r'<(.*?)>', arg)[0].split(',')
         start_result = kube_job.start_job()
         if start_result.get('code') != 'success':
             raise Exception(start_result['message'])
@@ -303,6 +308,7 @@ def run_downstream(**kwargs):
         upstream_order_id = kwargs.get('upstream_order_id')
         force = kwargs.get('force')
         job = Jobs.query.get(job_id)
+        command_params = kwargs.get('command_params')
         if not job:
             raise Exception(f"{job_id} does not exist.")
 
@@ -323,7 +329,7 @@ def run_downstream(**kwargs):
                 if not new_child_job_order['obj'].name:
                     new_child_job_order['obj'].name = f"{Orders.query.get(upstream_order_id).name}-{child_job.name}"
 
-                run_results.append(run_job(child_job, new_child_job_order.get('obj')))
+                run_results.append(run_job(child_job, new_child_job_order.get('obj'), command_params))
         failed_list = list()
         success_list = list()
         if run_results:
