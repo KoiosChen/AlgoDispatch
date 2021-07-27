@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource, reqparse
 from ..models import Orders
 from . import orders
-from .. import db, default_api
+from .. import db, default_api, logger
 from ..common import success_return, false_return, session_commit, submit_return
 from ..public_method import table_fields, new_data_obj
 from ..decorators import permission_required
@@ -14,10 +14,9 @@ orders_ns = default_api.namespace('orders', path='/orders', description='任务�
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('name', required=True, help='任务名称')
 register_parser.add_argument('desc', help='任务描述')
-register_parser.add_argument('upstream_id', help='上游任务ID')
-register_parser.add_argument('job_id', help='当前执行任务对应的任务定义ID')
+register_parser.add_argument('job_id', help='当前执行任务对应的任务定义ID, 仅新建任务时可提交此参数，若任务名称（name）已存在，则无法修改')
 register_parser.add_argument('status', type=int, help='状态，不传默认是1，正在运行，0：失败，1：正在运行，2：完成')
-register_parser.add_argument('output', help='输出，作为下游任务的输入')
+register_parser.add_argument('output', help='输出，作为下游任务的输入，若任务名称（name）已存在，则无法修改')
 register_parser.add_argument('force', type=int, help='强制执行下游任务。 如果status是2， 且force传递1， 则即使该任务已经执行下游，会再次执行，可能会产生重复数据')
 
 update_job_parser = register_parser.copy()
@@ -49,7 +48,7 @@ class QueryOrders(Resource):
     @permission_required("app.jobs.jobs_api.post")
     def post(self, **kwargs):
         """
-        添加任务执行订单，一般为初始任务或者crontab任务会直接使用此接口
+        新增执行任务，任务状态的更新一般为初始任务或者crontab任务会直接使用此接口
         """
         try:
             args = register_parser.parse_args()
@@ -62,14 +61,17 @@ class QueryOrders(Resource):
             force = args.get('force')
             # name要求唯一
             new_order = new_data_obj("Orders", **{"name": name})
-            if not new_order.get('new_one') and force == 0:
-                raise Exception(f'Order name {name} exist.')
+            if not new_order.get('new_one'):
+                logger.info(f"Order {name} exists, update by {args.keys()}")
+                # raise Exception(f'Order name {name} exist.')
 
             the_order = new_order.get('obj')
             the_order.desc = desc
-            the_order.job_id = job_id
             the_order.status = status
-            the_order.output = output
+            if new_order.get('new_one'):
+                the_order.job_id = job_id
+                the_order.output = output
+
             run_results = dict()
             if status == 2:
                 # 如果是2，表示complete，查找下游任务并开始
