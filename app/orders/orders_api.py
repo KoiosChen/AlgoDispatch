@@ -17,7 +17,7 @@ register_parser.add_argument('desc', help='任务描述')
 register_parser.add_argument('upstream_id', help='上游任务ID')
 register_parser.add_argument('job_id', help='当前执行任务对应的任务定义ID')
 register_parser.add_argument('status', type=int, help='状态，不传默认是1，正在运行，0：失败，1：正在运行，2：完成')
-register_parser.add_argument('output', help='输出，作为下游任务的输入')
+register_parser.add_argument('output', help='输出，作为下游任务的输入', type=dict, location='json')
 register_parser.add_argument('force', type=int, help='强制执行下游任务。 如果status是2， 且force传递1， 则即使该任务已经执行下游，会再次执行，可能会产生重复数据')
 
 update_job_parser = register_parser.copy()
@@ -74,17 +74,21 @@ class QueryOrders(Resource):
             if status == 2:
                 # 如果是2，表示complete，查找下游任务并开始
                 if force == 1 or the_order.run_times == 0:
-                    run_results = run_downstream(job_id=job_id, upstream_order_id=the_order.id, force=force)
+                    run_results = run_downstream(job_id=job_id,
+                                                 upstream_order_id=the_order.id,
+                                                 force=force,
+                                                 command_params=output)
                     the_order.run_times += 1
 
             if session_commit().get("code") == "success":
                 if run_results:
                     if run_results.get('code') == 'success':
-                        return success_return({"id": the_order.id, "child_job": run_results['data']}, 'Successfully created job')
+                        return success_return({"id": the_order.id, "child_job": run_results['data']},
+                                              'Successfully created job')
                     else:
-                        return false_return(run_results.get('data'), 'Failed to create job,')
+                        return false_return(run_results.get('data'), 'Failed to run job,')
                 else:
-                    return success_return(message='create job success, it\'s not finished yet!')
+                    return success_return(message='Run job success, it\'s not finished yet!')
             else:
                 raise Exception('db commit failed')
         except Exception as e:
