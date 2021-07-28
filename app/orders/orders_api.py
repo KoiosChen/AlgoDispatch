@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource, reqparse
 from ..models import Orders
 from . import orders
-from .. import db, default_api
+from .. import db, default_api, logger
 from ..common import success_return, false_return, session_commit, submit_return
 from ..public_method import table_fields, new_data_obj
 from ..decorators import permission_required
@@ -62,14 +62,17 @@ class QueryOrders(Resource):
             force = args.get('force')
             # name要求唯一
             new_order = new_data_obj("Orders", **{"name": name})
-            if not new_order.get('new_one') and force == 0:
-                raise Exception(f'Order name {name} exist.')
+            if not new_order.get('new_one'):
+                logger.info(f"Order {name} exists, update by {args.keys()}")
+                # raise Exception(f'Order name {name} exist.')
 
             the_order = new_order.get('obj')
             the_order.desc = desc
-            the_order.job_id = job_id
             the_order.status = status
-            the_order.output = output
+            if new_order.get('new_one'):
+                the_order.job_id = job_id
+                the_order.output = output
+
             run_results = dict()
             if status == 2:
                 # 如果是2，表示complete，查找下游任务并开始
