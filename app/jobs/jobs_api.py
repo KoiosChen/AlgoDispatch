@@ -48,7 +48,7 @@ class QueryJobs(Resource):
         if args.get("name"):
             args['search']['name'] = args.get('name')
         return success_return(
-            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
+            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files', 'tags']),
             "请求成功")
 
     @jobs_ns.doc(body=register_parser)
@@ -118,16 +118,21 @@ class JobByName(Resource):
 
             tags = update_job_tags_parser.parse_args()
             current_job['obj'].tags = []
-            for tag in tags:
+            tag_id = list()
+            for tag in tags["tag"]:
                 tag_name = new_data_obj("ArgNames", **{'name': tag['name']}).get('obj')
-                tag_map = new_data_obj("Arguments", **{'arg_name_id': tag_name.id, 'value': tag['value']})
-                current_job['obj'].tags.append(tag_map)
+                tag_map = new_data_obj("Arguments", **{'arg_name_id': tag_name.id, 'value': tag['value']}).get('obj')
+                if tag_name.id not in tag_id:
+                    current_job['obj'].tags.append(tag_map)
+                    tag_id.append(tag_name.id)
+                else:
+                    raise Exception('tag名称不可重复')
 
             return submit_return(f'Successfully updated job, job_name={kwargs["job_name"]}',
                                  'Failed to update job, db commit error')
 
         except Exception as e:
-            return false_return(message=f'update job failed, {e}'), 400
+            return false_return(message=f'设置tag失败, {e}'), 400
 
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.jobs.jobs_api.job_by_name.get")
@@ -135,7 +140,5 @@ class JobByName(Resource):
         """
         通过user id获取后端用户信息
         """
-        args = {'search': {'name': kwargs['job_name']}}
-        return success_return(
-            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
-            "请求成功")
+        tags = Jobs.query.filter_by(name=kwargs['job_name']).first().tags
+        return success_return({t.arg_name.name: t.value for t in tags}, "请求成功")

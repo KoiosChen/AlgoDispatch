@@ -122,6 +122,9 @@ def _make_table(fields, table, strainer=None):
         elif f == 'config_files':
             if table.config_files:
                 tmp[f] = get_table_data_by_id(eval(table.config_files.__class__.__name__), table.config_files.id)
+        elif f == 'tags':
+            x = {t.arg_name.name: t.value for t in table.tags}
+            tmp[f] = x
         else:
             r = getattr(table, f)
             if isinstance(r, int) or isinstance(r, float):
