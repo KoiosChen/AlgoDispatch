@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource, reqparse
 from ..models import Jobs
 from . import jobs
-from .. import db, default_api
+from .. import db, default_api, logger
 from ..common import success_return, false_return, session_commit, submit_return
 from werkzeug.datastructures import FileStorage
 from ..public_method import table_fields, new_data_obj
@@ -18,7 +18,6 @@ register_parser.add_argument('name', required=True, help='任务名称')
 register_parser.add_argument('desc', help='任务描述')
 register_parser.add_argument('run_env', help='运行环境，选择K8S的Master， 目前支持k8sm01, k8sm02')
 register_parser.add_argument('run_type', help='运行类型，job，cronjob等')
-register_parser.add_argument('input_params', help='重置yaml配置中的command， 目前仅支持一个container')
 register_parser.add_argument('seq', help='同级任务执行顺序')
 register_parser.add_argument('parent_id', help='父级job ID， 可通过job get方法获取ID')
 register_parser.add_argument('master', help='指定K8S master')
@@ -26,9 +25,8 @@ register_parser.add_argument('master', help='指定K8S master')
 register_parser.add_argument('file', required=True, type=FileStorage, location='files')
 # register_parser.add_argument('Authorization', required=True, location='headers')
 
-update_job_parser = register_parser.copy()
-update_job_parser.replace_argument('name', required=False, help='任务名称')
-update_job_parser.replace_argument('file', required=False, type=FileStorage, location='files')
+update_job_tags_parser = reqparse.RequestParser()
+update_job_tags_parser.add_argument('tag', type=list, help='更新指定JOB的tag，若需要更新，需全量重传', location='json')
 
 return_json = jobs_ns.model('ReturnRegister', return_dict)
 
@@ -50,7 +48,7 @@ class QueryJobs(Resource):
         if args.get("name"):
             args['search']['name'] = args.get('name')
         return success_return(
-            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
+            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files', 'tags']),
             "请求成功")
 
     @jobs_ns.doc(body=register_parser)
@@ -66,8 +64,6 @@ class QueryJobs(Resource):
             desc = args.get('desc')
             run_env = args.get('run_env')
             run_type = args.get('run_type')
-            input_params = args.get('input_params')
-            # arguments = args.get('arguments')
             seq = args.get('seq')
             parent_id = args.get('parent_id')
             upload_object = args.get('file')
@@ -79,7 +75,6 @@ class QueryJobs(Resource):
             the_job = new_job.get('obj')
             the_job.desc = desc
             the_job.run_env = run_env
-            the_job.input_params = input_params
             the_job.seq = seq
             if parent_id and the_job.parent_id is None:
                 parent_obj = Jobs.query.get(parent_id)
@@ -106,44 +101,38 @@ class QueryJobs(Resource):
             return false_return(message=f'create job failed for {e}')
 
 
-@jobs_ns.route('/<string:job_name>')
+@jobs_ns.route('/<string:job_name>/tags')
 @jobs_ns.param("job_name", "需要更新的job的name")
 class JobByName(Resource):
-    @jobs_ns.doc(body=update_job_parser)
+    @jobs_ns.doc(body=update_job_tags_parser)
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.jobs.jobs_api.job_by_name.put")
     def put(self, **kwargs):
         """
-        修改任务定义
+        修改任务自身标签，可作为参数传入order来执行K8S上的JOB
         """
         try:
             current_job = new_data_obj("Jobs", **{"name": kwargs['job_name']})
             if current_job.get('new_one'):
                 raise Exception(f'Job name {kwargs["job_name"]} does not exist.')
 
-            args = update_job_parser.parse_args()
-
-            for key, value in args.items():
-                if key != 'file':
-                    if hasattr(current_job['obj'], key) and value is not None:
-                        setattr(current_job['obj'], key, value)
-
-            upload_object = args.get('file')
-
-            if upload_object:
-                print(upload_object.filename)
-                current_config = current_job['obj'].config_files.query.filter_by(status=1).first()
-                current_config.status = 0
-                file_store_path = upload_fdfs(upload_object)
-                new_config_file = new_data_obj("ConfigFiles", **{"filename": upload_object.filename,
-                                                                 "storage": file_store_path,
-                                                                 "job_id": current_job['obj'].id})
+            tags = update_job_tags_parser.parse_args()
+            current_job['obj'].tags = []
+            tag_id = list()
+            for tag in tags["tag"]:
+                tag_name = new_data_obj("ArgNames", **{'name': tag['name']}).get('obj')
+                tag_map = new_data_obj("Arguments", **{'arg_name_id': tag_name.id, 'value': tag['value']}).get('obj')
+                if tag_name.id not in tag_id:
+                    current_job['obj'].tags.append(tag_map)
+                    tag_id.append(tag_name.id)
+                else:
+                    raise Exception('tag名称不可重复')
 
             return submit_return(f'Successfully updated job, job_name={kwargs["job_name"]}',
                                  'Failed to update job, db commit error')
 
         except Exception as e:
-            return false_return(message=f'update job failed, {e}'), 400
+            return false_return(message=f'设置tag失败, {e}'), 400
 
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.jobs.jobs_api.job_by_name.get")
@@ -151,7 +140,5 @@ class JobByName(Resource):
         """
         通过user id获取后端用户信息
         """
-        args = {'search': {'name': kwargs['job_name']}}
-        return success_return(
-            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files']),
-            "请求成功")
+        tags = Jobs.query.filter_by(name=kwargs['job_name']).first().tags
+        return success_return({t.arg_name.name: t.value for t in tags}, "请求成功")

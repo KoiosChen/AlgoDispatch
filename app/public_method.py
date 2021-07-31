@@ -122,6 +122,9 @@ def _make_table(fields, table, strainer=None):
         elif f == 'config_files':
             if table.config_files:
                 tmp[f] = get_table_data_by_id(eval(table.config_files.__class__.__name__), table.config_files.id)
+        elif f == 'tags':
+            x = {t.arg_name.name: t.value for t in table.tags}
+            tmp[f] = x
         else:
             r = getattr(table, f)
             if isinstance(r, int) or isinstance(r, float):
@@ -265,8 +268,7 @@ def upload_fdfs(file):
     extension = filename.split('.')[-1] if '.' in filename else ''
     ret = fdfs_client.upload_by_buffer(file.read(), file_ext_name=extension)
     logger.info(ret)
-    fdfs_store_path = ret['Remote file_id'].decode()
-    return fdfs_store_path
+    return ret['Remote file_id'].decode()
 
 
 def run_job(job, order, params):
@@ -283,7 +285,9 @@ def run_job(job, order, params):
         yaml_command = kube_job.cfg['spec']['template']['spec']['containers'][0]['command']
         for arg in yaml_command:
             if re.search(r'^<.*>$', arg):
-                user, locate, tag = re.findall(r'<(.*?)>', arg)[0].split(',')
+                _, tag_belong, tag = re.findall(r'<(.*?)>', arg)[0].split(',')
+                if not tag_belong or (job.parent_id and tag_belong == job.parent.related_jobs.name):
+                    pass
         start_result = kube_job.start_job()
         if start_result.get('code') != 'success':
             raise Exception(start_result['message'])

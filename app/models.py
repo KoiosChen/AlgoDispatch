@@ -36,8 +36,8 @@ class Classifies(db.Model):
     jobs = db.relationship('Jobs', backref='classifies', lazy='dynamic')
 
 
-class ArgName(db.Model):
-    __tablename__ = 'arg_name'
+class ArgNames(db.Model):
+    __tablename__ = 'arg_names'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
     name = db.Column(db.String(50), nullable=False, unique=True, index=True)
     values = db.relationship('Arguments', backref='arg_name', uselist=False)
@@ -46,7 +46,7 @@ class ArgName(db.Model):
 class Arguments(db.Model):
     __tablename__ = 'arguments'
     id = db.Column(db.String(64), primary_key=True, default=make_uuid)
-    arg_name_id = db.Column(db.String(64), db.ForeignKey('arg_name.id'))
+    arg_name_id = db.Column(db.String(64), db.ForeignKey('arg_names.id'))
     value = db.Column(db.String(50), nullable=False, index=True)
 
 
@@ -89,7 +89,7 @@ class Jobs(db.Model):
     update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
     delete_at = db.Column(db.DateTime)
     #
-    arguments = db.relationship(
+    tags = db.relationship(
         'Arguments',
         secondary=job_arguments,
         backref=db.backref('related_jobs')
