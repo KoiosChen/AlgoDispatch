@@ -1,4 +1,4 @@
-from flask import request, send_file
+from flask import request, send_file, make_response
 from flask_restplus import Resource, reqparse
 from ..models import AlgoCap, FDFS_URL
 from . import algocap
@@ -6,11 +6,15 @@ from .. import default_api, logger
 from ..decorators import permission_required
 from ..swagger import return_dict
 import urllib.request
+import io
+from app.common import success_return
 
 algocap_ns = default_api.namespace('algocap', path='/algocap',
                                    description='抓包脚本配置下载接口')
 
 return_json = algocap_ns.model('ReturnRegister', return_dict)
+
+return_str = algocap_ns.model('ReturnRegister', "")
 
 
 @algocap_ns.route('/<string:conf_type>')
@@ -27,13 +31,7 @@ class AlgoCapQuery(Resource):
             if not conf:
                 return None, 404
             else:
-                conf_file = urllib.request.urlopen(f"{FDFS_URL}{conf.path}")
-                return send_file(
-                    filename_or_fp=conf_file,
-                    mimetype="application/octet-stream",
-                    as_attachment=True,
-                    attachment_filename=conf.name
-                )
+                return success_return(data=f"{FDFS_URL}{conf.path}")
         except Exception as e:
             logger.error(str(e))
             return None, 404
