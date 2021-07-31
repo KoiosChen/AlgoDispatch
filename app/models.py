@@ -140,6 +140,17 @@ class ConfigFiles(db.Model):
     delete_at = db.Column(db.DateTime)
 
 
+class AlgoCap(db.Model):
+    __tablename__ = 'algocap'
+    id = db.Column(db.String(64), primary_key=True, default=make_uuid)
+    name = db.Column(db.String(64), index=True)
+    conf_type = db.Column(db.String(20), default='start', index=True)
+    path = db.Column(db.String(200), index=True)
+    create_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    update_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
+    delete_at = db.Column(db.DateTime)
+
+
 FDFS_URL = "http://shaxyxa-fdfs01.xyxa.cnsh.algospace.org/"
 
 aes_key = 'koiosr2d2c3p0000'

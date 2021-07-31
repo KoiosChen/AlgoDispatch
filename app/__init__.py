@@ -120,4 +120,7 @@ def create_app(config_name):
     from .orders import orders as orders_blueprint
     app.register_blueprint(orders_blueprint)
 
+    from .algocap import algocap as algocap_blueprint
+    app.register_blueprint(algocap_blueprint)
+
     return app
