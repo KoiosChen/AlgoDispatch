@@ -276,18 +276,38 @@ def run_job(job, order, params):
     目前仅支持k8s运行job
     :param order:
     :param job:
+    :param params: parent的tag以及其产生的output合并的dict， 如果output的key和其tag冲突，则取output的值
     :return:
     """
     try:
         kube_job = KubeMgmt(job.run_env)
         kube_job.load_yaml(job.id)
         kube_job.cfg['metadata']['name'] = f"{order.name}-{order.run_times}"
+        # yaml_command 是个list
         yaml_command = kube_job.cfg['spec']['template']['spec']['containers'][0]['command']
+        new_args = list()
+        new_command = list()
         for arg in yaml_command:
-            if re.search(r'^<.*>$', arg):
+            if re.search(r'^<.*?>$', arg):
                 _, tag_belong, tag = re.findall(r'<(.*?)>', arg)[0].split(',')
-                if not tag_belong or (job.parent_id and tag_belong == job.parent.related_jobs.name):
-                    pass
+                if not tag_belong or tag_belong == job.name:
+                    # 如果tab_belong为空，或者名字等于当前执行job name，取自身tag
+                    for tag in job.tags:
+                        if tag.arg_name.name == tag:
+                            new_x = re.sub('<.*?>', tag.value, arg)
+                            new_args.append(new_x)
+                elif job.parent_id and tag_belong == job.parent.related_jobs.name:
+                    # 当前参数从父级job中获取，包括从父级tag以及output中取
+                    if tag in params.keys():
+                        new_x = re.sub('<.*?>', tag.value, arg)
+                        new_args.append(params.get(tag))
+            else:
+                new_command.append(arg)
+
+        new_command.extend(new_args)
+
+        kube_job.cfg['spec']['template']['spec']['containers'][0]['command'] = new_command
+
         start_result = kube_job.start_job()
         if start_result.get('code') != 'success':
             raise Exception(start_result['message'])
