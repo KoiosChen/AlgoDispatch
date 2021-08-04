@@ -137,7 +137,7 @@ class JobByName(Resource):
                 if key in dir_update_attr:
                     if hasattr(the_job, key) and args.get(key):
                         setattr(the_job, key, args.get(key))
-                elif key == "file":
+                elif key == "file" and args.get(key):
                     upload_object = args.get(key)
                     file_store_path = upload_fdfs(upload_object)
 
@@ -152,7 +152,7 @@ class JobByName(Resource):
                     new_config_file = new_data_obj("ConfigFiles", **{"filename": upload_object.filename,
                                                                      "storage": file_store_path,
                                                                      "job_id": the_job.id})
-                elif key == "name":
+                elif key == "name" and args.get(key):
                     if Jobs.query.filter_by(name=args.get(key)).first():
                         raise Exception('name conflict')
                     the_job.name = args.get(key)
