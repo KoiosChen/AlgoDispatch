@@ -297,9 +297,9 @@ def run_job(job, order, params):
                 _, tag_belong, tag = re.findall(r'<(.*?)>', arg)[0].split(',')
                 if not tag_belong or tag_belong == job.name:
                     # 如果tab_belong为空，或者名字等于当前执行job name，取自身tag
-                    for tag in job.tags:
-                        if tag.arg_name.name == tag:
-                            new_x = re.sub('<.*?>', tag.value, arg)
+                    for tag_ in job.tags:
+                        if tag_.arg_name.name == tag:
+                            new_x = re.sub('<.*?>', tag_.value, arg)
                             new_args.append(new_x)
                 elif job.parent_id and tag_belong == job.parent.related_jobs.name:
                     # 当前参数从父级job中获取，包括从父级tag以及output中取
