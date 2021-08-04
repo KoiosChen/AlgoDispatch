@@ -15,7 +15,7 @@ orders_ns = default_api.namespace('orders', path='/orders', description='任务�
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('name', required=True, help='任务名称')
 register_parser.add_argument('desc', help='任务描述')
-register_parser.add_argument('job_id', help='当前执行任务对应的任务定义ID')
+register_parser.add_argument('job_name', help='当前执行任务对应的任务名称')
 register_parser.add_argument('status', type=int, help='状态，不传默认是1，正在运行，0：失败，1：正在运行，2：完成')
 register_parser.add_argument('output', help='输出，作为下游任务的输入', type=dict, location='json')
 register_parser.add_argument('force', type=int, help='强制执行下游任务。 如果status是2， 且force传递1， 则即使该任务已经执行下游，会再次执行，可能会产生重复数据')
@@ -63,7 +63,11 @@ class QueryOrders(Resource):
             args = register_parser.parse_args()
             name = args.get('name')
             desc = args.get('desc')
-            job_id = args.get('job_id')
+            job = Jobs.query.filter_by(name=args.get('job_name')).first()
+            if not job:
+                return false_return(message=f'job name {args.get("job_name")} does not exist!'), 400
+            else:
+                job_id = job.id
             status = args.get('status')
             output = args.get('output')
             force = args.get('force')
