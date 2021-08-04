@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Resource, reqparse
-from ..models import Orders
+from ..models import Orders, Jobs
 from . import orders
 from .. import db, default_api, logger
 from ..common import success_return, false_return, session_commit, submit_return
@@ -15,7 +15,6 @@ orders_ns = default_api.namespace('orders', path='/orders', description='任务�
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('name', required=True, help='任务名称')
 register_parser.add_argument('desc', help='任务描述')
-register_parser.add_argument('upstream_id', help='上游任务ID')
 register_parser.add_argument('job_id', help='当前执行任务对应的任务定义ID')
 register_parser.add_argument('status', type=int, help='状态，不传默认是1，正在运行，0：失败，1：正在运行，2：完成')
 register_parser.add_argument('output', help='输出，作为下游任务的输入', type=dict, location='json')
@@ -27,7 +26,8 @@ update_job_parser.replace_argument('name', required=False, help='任务名称')
 return_json = orders_ns.model('ReturnRegister', return_dict)
 
 orders_page_parser = page_parser.copy()
-orders_page_parser.add_argument('name', help='name', location='args')
+orders_page_parser.add_argument('name', help='根据执行订单名称来查询', location='args')
+orders_page_parser.add_argument('job_name', help='查询此任务名称对应的所有执行订单', location='args')
 
 
 @orders_ns.route('')
@@ -43,6 +43,13 @@ class QueryOrders(Resource):
         args['search'] = dict()
         if args.get("name"):
             args['search']['name'] = args.get('name')
+        if args.get('job_name'):
+            job = Jobs.query.filter_by(name=args.get('name')).first()
+            if job:
+                args['search']['job_id'] = job.id
+            else:
+                logger.error(f'Query orders by job name {args.get("job_name")} failed for the name does not exist!')
+                return success_return({})
         return success_return(get_table_data(Orders, args, appends=['children'], removes=['job_id', 'parent_id']), "请求成功")
 
     @orders_ns.doc(body=register_parser)
@@ -56,7 +63,6 @@ class QueryOrders(Resource):
             args = register_parser.parse_args()
             name = args.get('name')
             desc = args.get('desc')
-            upstream_id = args.get('upstream_id')
             job_id = args.get('job_id')
             status = args.get('status')
             output = args.get('output')

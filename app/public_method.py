@@ -337,9 +337,19 @@ def run_downstream(**kwargs):
         upstream_order_id = kwargs.get('upstream_order_id')
         force = kwargs.get('force')
         job = Jobs.query.get(job_id)
-        command_params = kwargs.get('command_params')
+
         if not job:
             raise Exception(f"{job_id} does not exist.")
+
+        # 任务自身tag
+        job_tags = {t.arg_name.name: t.value for t in job.tags}
+        # 任务产生的output中的tag
+        command_params = kwargs.get('command_params')
+
+        # 合并父级job的tag和其输出，如果输出和job tag冲突，那取输出中的tag
+        for k, v in job_tags.items():
+            if k not in command_params.keys():
+                command_params[k] = v
 
         child_jobs = job.children
 

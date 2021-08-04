@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Resource, reqparse
-from ..models import Jobs, ConfigFiles
+from ..models import Jobs, ConfigFiles, Orders
 from . import jobs
 from .. import db, default_api, logger
 from ..common import success_return, false_return, session_commit, submit_return
@@ -206,3 +206,4 @@ class JobTagsByName(Resource):
         """
         tags = Jobs.query.filter_by(name=kwargs['job_name']).first().tags
         return success_return({t.arg_name.name: t.value for t in tags}, "请求成功")
+
