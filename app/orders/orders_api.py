@@ -42,7 +42,7 @@ class QueryOrders(Resource):
         args['search'] = dict()
         if args.get("name"):
             args['search']['name'] = args.get('name')
-        return success_return(get_table_data(Orders, args, removes=['job_id']), "请求成功")
+        return success_return(get_table_data(Orders, args, appends=['children'], removes=['job_id', 'parent_id']), "请求成功")
 
     @orders_ns.doc(body=register_parser)
     @orders_ns.marshal_with(return_json)

@@ -301,11 +301,11 @@ def run_job(job, order, params):
                         if tag_.arg_name.name == tag:
                             new_x = re.sub('<.*?>', tag_.value, arg)
                             new_args.append(new_x)
-                elif job.parent_id and tag_belong == job.parent.related_jobs.name:
+                elif job.parent_id and tag_belong == job.parent.name:
                     # 当前参数从父级job中获取，包括从父级tag以及output中取
                     if tag in params.keys():
-                        new_x = re.sub('<.*?>', tag.value, arg)
-                        new_args.append(params.get(tag))
+                        new_x = re.sub('<.*?>', params.get(tag), arg)
+                        new_args.append(new_x)
             else:
                 new_command.append(arg)
 
