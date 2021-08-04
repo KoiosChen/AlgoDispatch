@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Resource, reqparse
-from ..models import Jobs
+from ..models import Jobs, ConfigFiles
 from . import jobs
 from .. import db, default_api, logger
 from ..common import success_return, false_return, session_commit, submit_return
@@ -9,6 +9,7 @@ from ..public_method import table_fields, new_data_obj
 from ..decorators import permission_required
 from ..swagger import return_dict, head_parser, page_parser
 from ..public_method import get_table_data, get_table_data_by_id, upload_fdfs
+from collections import defaultdict
 
 jobs_ns = default_api.namespace('jobs', path='/jobs',
                                 description='任务的增删改查，任务的继承关系等')
@@ -24,6 +25,9 @@ register_parser.add_argument('master', help='指定K8S master')
 # ?register_parser.add_argument('arguments', help='元数据，根据运行环境和运行类型不同，来定义相应的参数', location='json', type=dict)
 register_parser.add_argument('file', required=True, type=FileStorage, location='files')
 # register_parser.add_argument('Authorization', required=True, location='headers')
+
+update_job_parser = register_parser.copy()
+update_job_parser.replace_argument('name', required=False, help='任务名称')
 
 update_job_tags_parser = reqparse.RequestParser()
 update_job_tags_parser.add_argument('tag', type=list, help='更新指定JOB的tag，若需要更新，需全量重传', location='json')
@@ -48,7 +52,8 @@ class QueryJobs(Resource):
         if args.get("name"):
             args['search']['name'] = args.get('name')
         return success_return(
-            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'], appends=['children', 'config_files', 'tags']),
+            get_table_data(Jobs, args, removes=['creator_id', 'parent_id'],
+                           appends=['children', 'config_files', 'tags']),
             "请求成功")
 
     @jobs_ns.doc(body=register_parser)
@@ -101,12 +106,70 @@ class QueryJobs(Resource):
             return false_return(message=f'create job failed for {e}')
 
 
-@jobs_ns.route('/<string:job_name>/tags')
+@jobs_ns.route('/<string:job_name>')
 @jobs_ns.param("job_name", "需要更新的job的name")
 class JobByName(Resource):
+    @jobs_ns.marshal_with(return_json)
+    @permission_required("app.jobs.jobs_api.job_by_name.get")
+    def get(self, **kwargs):
+        """获取指定job name 的记录"""
+        args = defaultdict(dict)
+        args['search']['name'] = kwargs['job_name']
+        return get_table_data(Jobs, args, removes=['creator_id', 'parent_id'],
+                              appends=['children', 'config_files', 'tags'])
+
     @jobs_ns.doc(body=update_job_tags_parser)
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.jobs.jobs_api.job_by_name.put")
+    def put(self, **kwargs):
+        """修改指定name的信息，不包括tags"""
+        try:
+            args = update_job_parser.parse_args()
+            dir_update_attr = ('desc', 'run_env', 'run_type', 'seq', 'parent_id', 'master')
+            current_job = new_data_obj("Jobs", **{"name": kwargs['job_name']})
+            if current_job.get('new_one'):
+                raise Exception(f'Job name {kwargs["job_name"]} does not exist.')
+
+            the_job = current_job.get('obj')
+
+            for key in args.keys():
+                if key in dir_update_attr:
+                    if hasattr(the_job, key):
+                        setattr(the_job, key, args.get(key))
+                elif key == "file":
+                    upload_object = args.get(key)
+                    file_store_path = upload_fdfs(upload_object)
+
+                    # 将老的配置状态设置为0， 这样取值不会取到
+                    old_config = the_job.config_file.query.filter(ConfigFiles.status.__eq__(1),
+                                                                  ConfigFiles.delete_at.__eq__(None)).first()
+                    if old_config:
+                        old_config.status = 0
+                        db.session.add(old_config)
+
+                    # 关联新的配置文件
+                    new_config_file = new_data_obj("ConfigFiles", **{"filename": upload_object.filename,
+                                                                     "storage": file_store_path,
+                                                                     "job_id": the_job.id})
+                elif key == "name":
+                    if Jobs.query.filter_by(name=args.get(key)).first():
+                        raise Exception('name conflict')
+                    the_job.name = args.get(key)
+
+            return submit_return('Successfully update job',
+                                 'Failed to update job, db commit error',
+                                 data={"id": the_job.id})
+        except Exception as e:
+            logger.error(str(e))
+            return false_return(message=str(e))
+
+
+@jobs_ns.route('/<string:job_name>/tags')
+@jobs_ns.param("job_name", "需要更新的job的name")
+class JobTagsByName(Resource):
+    @jobs_ns.doc(body=update_job_tags_parser)
+    @jobs_ns.marshal_with(return_json)
+    @permission_required("app.jobs.jobs_api.job_tags_by_name.put")
     def put(self, **kwargs):
         """
         修改任务自身标签，可作为参数传入order来执行K8S上的JOB
@@ -135,7 +198,7 @@ class JobByName(Resource):
             return false_return(message=f'设置tag失败, {e}'), 400
 
     @jobs_ns.marshal_with(return_json)
-    @permission_required("app.jobs.jobs_api.job_by_name.get")
+    @permission_required("app.jobs.jobs_api.job_tags_by_name.get")
     def get(self, **kwargs):
         """
         通过user id获取后端用户信息

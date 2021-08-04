@@ -121,7 +121,12 @@ def _make_table(fields, table, strainer=None):
                 tmp[f] = get_table_data_by_id(eval(table_name), table.shop_order_id, appends=['real_payed_cash_fee'])
         elif f == 'config_files':
             if table.config_files:
-                tmp[f] = get_table_data_by_id(eval(table.config_files.__class__.__name__), table.config_files.id)
+                table_obj = eval(table.config_files.__class__.__name__)
+                tmp[f] = get_table_data_by_id(table_obj,
+                                              table.config_files.id,
+                                              advance_search=[
+                                                  {"key": table_obj.status, "operator": "__eq__", "value": 1},
+                                                  {"key": table_obj.delete_at, "operator": "__eq__", "value": None}])
         elif f == 'tags':
             x = {t.arg_name.name: t.value for t in table.tags}
             tmp[f] = x
