@@ -117,7 +117,7 @@ class JobByName(Resource):
         args = defaultdict(dict)
         args['search']['name'] = kwargs['job_name']
         return success_return(data=get_table_data(Jobs, args, removes=['creator_id', 'parent_id'],
-                              appends=['children', 'config_files', 'tags']))
+                                                  appends=['children', 'config_files', 'tags']))
 
     @jobs_ns.doc(body=update_job_parser)
     @jobs_ns.marshal_with(return_json)
@@ -142,8 +142,8 @@ class JobByName(Resource):
                     file_store_path = upload_fdfs(upload_object)
 
                     # 将老的配置状态设置为0， 这样取值不会取到
-                    old_config = the_job.config_file.query.filter(ConfigFiles.status.__eq__(1),
-                                                                  ConfigFiles.delete_at.__eq__(None)).first()
+                    old_config = the_job.config_files.query.filter(ConfigFiles.status.__eq__(1),
+                                                                   ConfigFiles.delete_at.__eq__(None)).first()
                     if old_config:
                         old_config.status = 0
                         db.session.add(old_config)
