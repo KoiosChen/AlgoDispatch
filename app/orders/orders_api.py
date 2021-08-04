@@ -8,6 +8,7 @@ from ..public_method import table_fields, new_data_obj
 from ..decorators import permission_required
 from ..swagger import return_dict, head_parser, page_parser
 from ..public_method import get_table_data, get_table_data_by_id, upload_fdfs, run_downstream
+from collections import defaultdict
 
 orders_ns = default_api.namespace('orders', path='/orders', description='任务执行的记录，包括其状态等')
 
@@ -98,29 +99,16 @@ class QueryOrders(Resource):
             return false_return(message=f'create job failed for {e}')
 
 
-@orders_ns.route('/<string:order_id>')
+@orders_ns.route('/<string:order_name>')
 @orders_ns.expect(head_parser)
-@orders_ns.param("order_id", "定义的JOB ID, 通过/job的get方法查询")
-class QueryById(Resource):
-    @orders_ns.doc(body=update_job_parser)
+@orders_ns.param("order_name", "order name")
+class QueryByName(Resource):
     @orders_ns.marshal_with(return_json)
-    @permission_required("app.jobs.jobs_api.job_by_id.put")
-    def put(self, **kwargs):
-        """
-        修改任务定义
-        """
-        args = update_job_parser.parse_args()
-        user = Jobs.query.get(kwargs['job_id'])
-        if user:
-            fields_ = table_fields(Jobs, appends=['role_id', 'password'], removes=['password_hash'])
-            return modify_user_profile(args, user, fields_)
-        else:
-            return false_return(message="用户不存在"), 400
-
-    @orders_ns.marshal_with(return_json)
-    @permission_required("app.users.users_api.user_info")
+    @permission_required("app.orders.orders_api.query_by_name.get")
     def get(self, **kwargs):
         """
         通过user id获取后端用户信息
         """
-        return success_return(get_table_data_by_id(Users, kwargs['user_id'], ['roles'], ['password_hash']), "请求成功")
+        args = defaultdict(dict)
+        args['search']['name'] = kwargs['order_name']
+        return success_return(get_table_data(Orders, args, appends=['children'], removes=['job_id', 'parent_id']), "请求成功")
