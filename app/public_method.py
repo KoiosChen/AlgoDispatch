@@ -125,10 +125,8 @@ def _make_table(fields, table, strainer=None):
                 tmp[f] = get_table_data_by_id(table_obj,
                                               table.config_files.id,
                                               advance_search=[
-                                                  {"key": f"{table.config_files.__class__.__name__}.status",
-                                                   "operator": "__eq__", "value": 1},
-                                                  {"key": f"{table.config_files.__class__.__name__}.delete_at",
-                                                   "operator": "__eq__", "value": None}])
+                                                  {"key": "ConfigFiles.status", "operator": "__eq__", "value": 1},
+                                                  {"key": "ConfigFiles.delete_at", "operator": "__eq__", "value": None}])
         elif f == 'tags':
             x = {t.arg_name.name: t.value for t in table.tags}
             tmp[f] = x

@@ -28,6 +28,7 @@ register_parser.add_argument('file', required=True, type=FileStorage, location='
 
 update_job_parser = register_parser.copy()
 update_job_parser.replace_argument('name', required=False, help='任务名称')
+update_job_parser.replace_argument('file', required=False, type=FileStorage, location='files')
 
 update_job_tags_parser = reqparse.RequestParser()
 update_job_tags_parser.add_argument('tag', type=list, help='更新指定JOB的tag，若需要更新，需全量重传', location='json')
@@ -115,10 +116,10 @@ class JobByName(Resource):
         """获取指定job name 的记录"""
         args = defaultdict(dict)
         args['search']['name'] = kwargs['job_name']
-        return get_table_data(Jobs, args, removes=['creator_id', 'parent_id'],
-                              appends=['children', 'config_files', 'tags'])
+        return success_return(data=get_table_data(Jobs, args, removes=['creator_id', 'parent_id'],
+                              appends=['children', 'config_files', 'tags']))
 
-    @jobs_ns.doc(body=update_job_tags_parser)
+    @jobs_ns.doc(body=update_job_parser)
     @jobs_ns.marshal_with(return_json)
     @permission_required("app.jobs.jobs_api.job_by_name.put")
     def put(self, **kwargs):
@@ -134,7 +135,7 @@ class JobByName(Resource):
 
             for key in args.keys():
                 if key in dir_update_attr:
-                    if hasattr(the_job, key):
+                    if hasattr(the_job, key) and args.get(key):
                         setattr(the_job, key, args.get(key))
                 elif key == "file":
                     upload_object = args.get(key)
