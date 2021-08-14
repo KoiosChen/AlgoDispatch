@@ -6,6 +6,7 @@ import datetime
 import traceback
 from decimal import Decimal
 from app.pykube import KubeMgmt
+from app.public_parser import load_yaml
 import re
 
 
@@ -126,7 +127,8 @@ def _make_table(fields, table, strainer=None):
                                               table.config_files.id,
                                               advance_search=[
                                                   {"key": "ConfigFiles.status", "operator": "__eq__", "value": 1},
-                                                  {"key": "ConfigFiles.delete_at", "operator": "__eq__", "value": None}])
+                                                  {"key": "ConfigFiles.delete_at", "operator": "__eq__",
+                                                   "value": None}])
         elif f == 'tags':
             x = {t.arg_name.name: t.value for t in table.tags}
             tmp[f] = x
@@ -286,7 +288,7 @@ def run_job(job, order, params):
     """
     try:
         kube_job = KubeMgmt(job.run_env)
-        kube_job.load_yaml(job.id)
+        kube_job.cfg = load_yaml(job.id)
         kube_job.cfg['metadata']['name'] = f"{order.name}-{order.run_times}"
         # yaml_command 是个list
         yaml_command = kube_job.cfg['spec']['template']['spec']['containers'][0]['command']
@@ -363,7 +365,8 @@ def run_downstream(**kwargs):
                                                                 "job_id": child_job.id})
 
                 if not new_child_job_order.get('new_one') and force == 0:
-                    raise Exception('下游任务已执行')
+                    raise Exception(
+                        'The downstream jos has been done, you cannot run it again. If you wanna do so, please set force=1')
 
                 if not new_child_job_order['obj'].name:
                     new_child_job_order['obj'].name = f"{Orders.query.get(upstream_order_id).name}-{child_job.name}"
